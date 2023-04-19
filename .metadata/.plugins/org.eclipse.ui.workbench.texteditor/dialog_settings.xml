@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="165"/>
+		<item key="DIALOG_Y_ORIGIN" value="349"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="selection" value=""/>
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="true"/>
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<list key="findhistory">
+			<item value="green"/>
+			<item value="super"/>
+			<item value="addWind"/>
+			<item value="addWin"/>
+			<item value="0.75"/>
+			<item value="0.25"/>
+			<item value="japan&apos;s post"/>
+			<item value="japan&apos;s post-war"/>
+			<item value="japan&apos;s post war"/>
+			<item value="japan post"/>
+			<item value="japan "/>
+			<item value="synopsisPane"/>
+			<item value="NONE"/>
+			<item value="0.95"/>
+			<item value="0.05"/>
+		</list>
+		<list key="replacehistory">
+			<item value="0.8"/>
+			<item value="0.2"/>
+			<item value="HORIZONTAL"/>
+			<item value="0.75"/>
+			<item value="0.25"/>
+			<item value=""/>
+			<item value="0.3"/>
+			<item value="0.7"/>
+			<item value="0.5"/>
+			<item value="0.4"/>
+			<item value="0.6"/>
+			<item value="1"/>
+			<item value="0.05"/>
+			<item value="0.95"/>
+			<item value="0.9"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="1178"/>
+		<item key="DIALOG_Y_ORIGIN" value="233"/>
+		<item key="DIALOG_WIDTH" value="412"/>
+		<item key="DIALOG_HEIGHT" value="446"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|11.25|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+	</section>
+</section>

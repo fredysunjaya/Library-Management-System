@@ -1,0 +1,13 @@
+package librarymanagementsystem;
+
+import java.time.LocalDate;
+
+public class IssuedBook {
+	private String id;
+	private Member member;
+	private Book book;
+	private LocalDate issueDate;
+	private LocalDate returnDate;
+	private String status;
+	private double fine;
+}

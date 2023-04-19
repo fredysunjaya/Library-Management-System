@@ -1,0 +1,369 @@
+package librarymanagementsystem;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
+
+import javax.swing.JButton;
+import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.text.NumberFormatter;
+
+public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListener, WindowListener {
+	private NumberFormat format = NumberFormat.getInstance();
+    private NumberFormatter formatter = new NumberFormatter(format) {
+    	public Object stringToValue(String text) throws ParseException {
+    		if(text.equals("") || text.equals("-")) {
+    			return null;
+    		}
+    		return super.stringToValue(text);
+    	};
+    };
+	
+	private AdminBookFrame adminBookFrame = new AdminBookFrame();
+	
+	// JInternalFrame Add Form
+	private JLabel titleLbl = new JLabel("ADD BOOK");
+	private JLabel isbnLbl = new JLabel("ISBN");
+	private JTextField isbnTxt = new JTextField();
+	private JLabel nameLbl = new JLabel("Title");
+	private JTextField nameTxt = new JTextField();
+	private JLabel authorLbl = new JLabel("Author");
+	private JTextField authorTxt = new JTextField();
+	private JLabel pagesLbl = new JLabel("Pages");
+	private JFormattedTextField pagesTxt = new JFormattedTextField(formatter);
+	private JLabel publisherLbl = new JLabel("Publisher");
+	private JTextField publisherTxt = new JTextField();
+	private JLabel publicationYearLbl = new JLabel("Publication Year");
+	private JFormattedTextField publicationYearTxt = new JFormattedTextField(formatter);
+	private JLabel synopsisLbl = new JLabel("Synopsis");
+	private JTextArea synopsisArea = new JTextArea();
+	private JScrollPane synopsisPane = new JScrollPane(synopsisArea);
+	private JLabel quantityLbl = new JLabel("Quantity");
+	private JTextField quantityTxt = new JTextField();
+	private JButton addBtn = new JButton("Add");
+	private JButton cancelBtn = new JButton("Cancel");
+	
+	
+	public void initComponent() {
+		
+		formatter.setValueClass(Integer.class);
+	    formatter.setAllowsInvalid(false);
+	    // If you want the value to be committed on each keystroke instead of focus lost
+	    formatter.setCommitsOnValidEdit(true);
+		
+		addWindowListener(this);
+		
+		JPanel containerForm = new JPanel();
+		
+		// JInternal Frame Form
+		GridBagLayout leftFormLayout = new GridBagLayout();
+		GridBagConstraints leftFormConst = new GridBagConstraints();
+		containerForm.setLayout(leftFormLayout);
+		
+		// Title Label
+		leftFormConst.gridx = 0;	
+		leftFormConst.gridy = 0;
+		leftFormConst.gridwidth = 2;
+		leftFormConst.weightx= 1; 
+		titleLbl.setFont(new Font("Tahoma", Font.BOLD, 32));
+		leftFormConst.insets = new Insets(0, 0, 30, 0);
+		containerForm.add(titleLbl, leftFormConst);
+		
+		// ISBN Label
+		leftFormConst.anchor = GridBagConstraints.LINE_END;
+		leftFormConst.gridwidth = 1;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		leftFormConst.ipady = 10;
+		leftFormConst.insets = new Insets(5, 15, 5, 15);
+		containerForm.add(isbnLbl, leftFormConst);
+		
+		// ISBN text field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL; 
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(isbnTxt, leftFormConst);
+		
+		// Title Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL; 
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(nameLbl, leftFormConst);
+		
+		// Title text field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(nameTxt, leftFormConst);	
+		
+		// Author Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(authorLbl, leftFormConst);
+		
+		// Author text field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(authorTxt, leftFormConst);
+		
+		// Pages Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(pagesLbl, leftFormConst);
+		
+		// Pages field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(pagesTxt, leftFormConst);
+		
+		// Publisher Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(publisherLbl, leftFormConst);
+		
+		// Publisher field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(publisherTxt, leftFormConst);
+		
+		// Publication Year Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(publicationYearLbl, leftFormConst);
+		
+		// Publication Year field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(publicationYearTxt, leftFormConst);
+		
+		// Synopsis Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		containerForm.add(synopsisLbl, leftFormConst);
+		
+//		// Synopsis field
+//		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+//		leftFormConst.gridx++;
+//		leftFormConst.weightx = 0.8;
+//		synopsisArea.setRows(5);
+//		// line wrapping
+//		synopsisArea.setLineWrap(true);
+//		// word wrapping
+//		synopsisArea.setWrapStyleWord(true);
+//		containerForm.add(synopsisPane, leftFormConst);
+		
+		// Quantity Label
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.2;
+		leftFormConst.ipady = 10;
+		containerForm.add(quantityLbl, leftFormConst);
+		
+		// Quantity field
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.8;
+		containerForm.add(quantityTxt, leftFormConst);
+		
+		JPanel buttonForm = new JPanel();
+		buttonForm.setLayout(new GridBagLayout());
+		GridBagConstraints buttonConst = new GridBagConstraints();
+		
+		// Add Button
+		buttonConst.gridx = 0;
+		buttonConst.gridy++;
+		buttonConst.weightx = 0.5;
+		buttonConst.insets = new Insets(30, 200, 0, 100);
+		buttonConst.fill = GridBagConstraints.HORIZONTAL;
+		addBtn.addActionListener(this);
+		buttonForm.add(addBtn, buttonConst);
+		
+		// Cancel Button
+		buttonConst.gridx++;
+		buttonConst.insets = new Insets(30, 100, 0, 200);
+		cancelBtn.addActionListener(this);
+		buttonForm.add(cancelBtn, buttonConst);
+		
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.gridwidth = 2;
+		containerForm.add(buttonForm, leftFormConst);
+
+		setLayout(new GridBagLayout());
+		GridBagConstraints containerConst = new GridBagConstraints();
+		containerConst.insets = new Insets(0, 100, 0, 100);
+		containerConst.weightx = 1.0;
+		containerConst.fill = GridBagConstraints.HORIZONTAL;
+		add(containerForm, containerConst);
+//		setResizable(false);
+	}
+
+	public AddUpdateBookFormAdminFrame(AdminBookFrame adminBookFrame, int width, int height) {
+		this.adminBookFrame = adminBookFrame;
+		setSize((int)(width / 1.125), (int)(height / 1.125));
+		setLocationRelativeTo(adminBookFrame);
+		
+		addBtn.setText("Add");
+		setTitle("Add Form");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		initComponent();
+		setVisible(true);
+	}
+	
+	public AddUpdateBookFormAdminFrame(AdminBookFrame adminBookFrame, int width, int height, 
+			String isbn, String name, String author, int pages, String publisher, int publishYear, String synopsis, int quantity) {
+		
+		this.adminBookFrame = adminBookFrame;
+		setSize((int)(width / 1.125), (int)(height / 1.125));
+		setLocationRelativeTo(adminBookFrame);
+		
+		setTitle("Update Form");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		initComponent();
+		setVisible(true);
+		
+		addBtn.setText("Update");
+		isbnTxt.setText(isbn);
+		nameTxt.setText(name);
+		authorTxt.setText(author);
+		pagesTxt.setText(String.valueOf(pages));
+		publisherTxt.setText(publisher);
+		publicationYearTxt.setText(String.valueOf(publishYear));
+		synopsisArea.setText(synopsis);
+		quantityTxt.setText(String.valueOf(quantity));
+	}
+	
+	public AddUpdateBookFormAdminFrame() {
+		
+	}
+	
+	public void resetForm() {
+		nameTxt.setText("");
+		authorTxt.setText("");
+		publicationYearTxt.setText("");
+		pagesTxt.setText("");
+		isbnTxt.setText("");
+		publisherTxt.setText("");
+		synopsisArea.setText("");
+		quantityTxt.setText("");
+	}
+	
+	public void exitFrame() {
+		resetForm();
+		adminBookFrame.setEnabled(true);
+		adminBookFrame.setAlwaysOnTop(true);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		adminBookFrame.setAlwaysOnTop(false);
+		dispose();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(cancelBtn)) {
+			exitFrame();
+			
+		} else if(e.getSource().equals(addBtn)) {
+			String name = nameTxt.getText();
+			String author = authorTxt.getText();
+			int publishYear = Integer.parseInt(publicationYearTxt.getText());
+			int pages = Integer.parseInt(pagesTxt.getText());
+			String isbn = isbnTxt.getText();
+			String publisher = publisherTxt.getText();
+			String synopsis = synopsisArea.getText();
+			int quantity = Integer.parseInt(quantityTxt.getText());
+			
+			if(addBtn.getText().equals("Add")) {
+				adminBookFrame.addData(name, author, publishYear, pages, isbn, publisher, synopsis, quantity);
+			
+			} else if(addBtn.getText().equals("Update")) {
+				adminBookFrame.updateData(name, author, publishYear, pages, isbn, publisher, synopsis, quantity);
+				
+			}			
+			exitFrame();				
+		} 
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		exitFrame();
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}

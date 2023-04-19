@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;IronMan&apos; to &apos;ironMan&apos;&#x0D;&#x0A;- Original project: &apos;Java(CAWU II)&apos;&#x0D;&#x0A;- Original element: &apos;Java(CAWU II)/Session03/IronMan&apos;&#x0D;&#x0A;- Renamed element: &apos;Java(CAWU II)/Session03/ironMan&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;IronMan&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/Session03&lt;IronMan" name="ironMan" qualified="false" references="true" stamp="1673575399010" textual="false" version="1.0"/>
+</session>

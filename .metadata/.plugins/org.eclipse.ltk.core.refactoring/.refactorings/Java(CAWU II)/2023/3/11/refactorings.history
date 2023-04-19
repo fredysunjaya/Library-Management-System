@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;MainFrame.java&apos; to &apos;guitest3&apos;&#x0D;&#x0A;- Original project: &apos;Java(CAWU II)&apos;&#x0D;&#x0A;- Original element: &apos;Java(CAWU II)/Session10/MainFrame.java&apos;&#x0D;&#x0A;- Renamed element: &apos;Java(CAWU II)/Session10/guitest3&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;MainFrame.java&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/Session10&lt;MainFrame.java" name="guitest3" qualified="false" references="true" stamp="1678863659212" textual="false" version="1.0"/>
+</session>

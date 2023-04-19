@@ -1,0 +1,172 @@
+package librarymanagementsystem;
+
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import com.toedter.calendar.JDateChooser;
+
+public class AddMemberFormAdminFrame extends JFrame implements ActionListener {
+	private AdminMemberFrame adminMemberFrame;
+	
+	// South West
+	private JPanel leftFormPanel = new JPanel();
+	private JLabel idLbl = new JLabel("ID");
+	private JTextField idTxt = new JTextField();
+	private JLabel nameLbl = new JLabel("Name");
+	private JTextField nameTxt = new JTextField();
+	private JLabel birthDateLbl = new JLabel("Birthdate");
+	private JDateChooser birthDateChooser = new JDateChooser();
+	private JLabel emailLbl = new JLabel("Email");
+	private JTextField emailTxt = new JTextField();
+	private JLabel phoneLbl = new JLabel("Phone Number");
+	private JTextField phoneTxt = new JTextField();
+	private JLabel passwordLbl = new JLabel("Password");
+	private JTextField passwordTxt = new JTextField();
+	
+	public void initComponent() {
+		// Left Form
+		GridBagLayout leftFormLayout = new GridBagLayout();
+		GridBagConstraints leftFormConst = new GridBagConstraints();
+		leftFormPanel.setLayout(leftFormLayout);
+		leftFormPanel.setBackground(Color.GRAY);
+		
+		// ID Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy = 0;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.ipady = 10;
+		leftFormConst.insets = new Insets(15, 40, 5, 40);
+		leftFormPanel.add(idLbl, leftFormConst);
+		
+		// ID text field
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(idTxt, leftFormConst);
+		
+		// Name Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.insets = new Insets(5, 40, 5, 40);
+		leftFormConst.fill = GridBagConstraints.NONE;
+		leftFormPanel.add(nameLbl, leftFormConst);
+		
+		// Name text field
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(nameTxt, leftFormConst);	
+		
+		// BirthDate Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.fill = GridBagConstraints.NONE;
+		leftFormPanel.add(birthDateLbl, leftFormConst);
+		
+		// BirthDate Chooser
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(birthDateChooser, leftFormConst);
+	
+		// Email Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.fill = GridBagConstraints.NONE;
+		leftFormPanel.add(emailLbl, leftFormConst);
+		
+		// Email Text field
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(emailTxt, leftFormConst);
+
+		// Phone Number Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.fill = GridBagConstraints.NONE;
+		leftFormPanel.add(phoneLbl, leftFormConst);
+		
+		// Phone Number Text field
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(phoneTxt, leftFormConst);
+		
+		// Password Label
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy++;
+		leftFormConst.weightx = 0.25;
+		leftFormConst.fill = GridBagConstraints.NONE;
+		leftFormPanel.add(passwordLbl, leftFormConst);
+		
+		// Password Text field
+		leftFormConst.gridx++;
+		leftFormConst.weightx = 0.75;
+		leftFormConst.insets = new Insets(5, 40, 15, 40);
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(passwordTxt, leftFormConst);
+	}
+	
+	public void resetForm() {
+		idTxt.setText("");
+		nameTxt.setText("");
+		birthDateChooser.setDate(null);
+		emailTxt.setText("");
+		phoneTxt.setText("");
+		passwordTxt.setText("");
+	}
+	
+	public AddMemberFormAdminFrame(AdminMemberFrame adminMemberFrame,int width, int height) {
+		this.adminMemberFrame= adminMemberFrame; 
+		setSize((int)(width / 1.125), (int)(height / 1.125));
+		setLocationRelativeTo(adminMemberFrame);
+		
+		setTitle("Add Member");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		initComponent();
+		setVisible(true);
+	}
+	
+	public AddMemberFormAdminFrame() {
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(addBtn)) {
+			String id = idTxt.getText();
+			String name = nameTxt.getText();
+			
+			Date date = birthDateChooser.getDate();
+			LocalDate birthDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+			String email = emailTxt.getText();
+			String phoneNum = phoneTxt.getText();
+			String password = passwordTxt.getText();
+			Object[] row = {id, name, birthDate, email, phoneNum, password};
+			
+			library.addMember(id, name, birthDate, email, phoneNum, password);
+			dtmMember.addRow(row);
+			memberTable.invalidate();
+			resetForm();
+		}
+	}
+}

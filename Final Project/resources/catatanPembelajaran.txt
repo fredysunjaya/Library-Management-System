@@ -1,0 +1,15 @@
+Penggunaan Jformatted text field
+Penggunaan numberformat pada jformatted text field
+Penggunaan Image resizer pada BufferedImage
+
+To create a regular expression that matches a string containing at least one uppercase letter, one lowercase letter, and one special character in Java, you can use the following pattern:
+
+String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\p{Punct}).+$";
+Let's break down this regular expression pattern:
+
+^ asserts the start of the string.
+(?=.*[a-z]) is a positive lookahead that asserts the presence of at least one lowercase letter anywhere in the string.
+(?=.*[A-Z]) is a positive lookahead that asserts the presence of at least one uppercase letter anywhere in the string.
+(?=.*\\p{Punct}) is a positive lookahead that asserts the presence of at least one punctuation character (which includes special characters) anywhere in the string. The \\p{Punct} character class matches any punctuation character.
+.+ matches one or more of any character (except for line terminators).
+$ asserts the end of the string.
