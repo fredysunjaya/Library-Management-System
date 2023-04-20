@@ -125,6 +125,10 @@ public class Library {
 					System.out.println(fine);
 				}
 				
+				if(!line[6].equals("-")) {
+					fine = Double.parseDouble(line[6]);
+				}
+				
 				issuedBooks.add(new IssuedBook(line[0], member, book, issueDate, returnDate, line[5], fine));
 			}
 		} catch (FileNotFoundException e) {

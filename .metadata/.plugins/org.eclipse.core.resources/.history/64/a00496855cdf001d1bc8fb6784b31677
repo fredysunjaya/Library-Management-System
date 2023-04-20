@@ -121,8 +121,11 @@ public class Library {
 					line[5] = "Issued";
 				} else if(!line[5].equalsIgnoreCase("Returned") && returnDate.compareTo(today) <= 0) {
 					line[5] = "Late";
-					fine = Math.abs(ChronoUnit.DAYS.between(today, returnDate) * 0.1);
-					System.out.println(fine);
+					fine = ChronoUnit.DAYS.between(today, returnDate) * 0.1;
+				}
+				
+				if(!line[6].equals("-")) {
+					fine = Double.parseDouble(line[6]);
 				}
 				
 				issuedBooks.add(new IssuedBook(line[0], member, book, issueDate, returnDate, line[5], fine));
