@@ -49,7 +49,7 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 	
 	// Center
 	private JTable memberTable = new JTable();
-	private Object[] memberColumn = {"ID", "Name", "Birthdate", "Email Address", "Phone Number"};
+	private Object[] memberColumn = {"ID", "Name", "Birthdate", "Email Address", "Phone Number", "Join Date"};
 	private JScrollPane memberScrollPane = new JScrollPane(memberTable);
 	private DefaultTableModel dtmMember;
 	private DefaultTableModel dtmSearchMember;
@@ -79,11 +79,14 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 		};
 		
 		for(Member member : members) {
-			Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum()};
+			Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum(), member.getJoinDate()};
 			
 			dtmMember.addRow(memberFile);
 		}
 		memberTable.setModel(dtmMember);
+		
+		memberTable.getColumnModel().getColumn(5).setMinWidth(0);
+		memberTable.getColumnModel().getColumn(5).setMaxWidth(0);
 	} 
 	
 	public void addData(String id, String name, LocalDate birthDate, String email, String phoneNum, String password, LocalDate joinDate) {
@@ -243,8 +246,12 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 		} else if(e.getSource().equals(memberBtn)) {
 			
 		} else if(e.getSource().equals(issuedBtn)) {
+			Point point = getLocationOnScreen();
+			library.changeFrame(new AdminIssuedRecordsFrame(library, getWidth(), getHeight(), point, true), this);
 			
 		} else if(e.getSource().equals(recordBtn)) {
+			Point point = getLocationOnScreen();
+			library.changeFrame(new AdminIssuedRecordsFrame(library, getWidth(), getHeight(), point, false), this);
 			
 		} else if(e.getSource().equals(logoutBtn)) {
 			library.logout(this, getWidth(), getHeight());
@@ -261,8 +268,11 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				
 				if(answer == JOptionPane.YES_OPTION) {
-					dtmMember.removeRow(selectedRow);
-					library.removeMember(selectedRow);
+					Member member = library.searchMember(memberTable.getValueAt(selectedRow, 0).toString());
+					
+					library.removeMember(member);
+					loadTable(library.getMembers());
+					memberTable.setModel(dtmMember);
 					memberTable.invalidate();				
 				}
 			} else {
@@ -272,8 +282,10 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 			int selectedRow = memberTable.getSelectedRow();
 			
 			if(selectedRow != -1) {
-				ViewMemberAdminFrame viewMember = new ViewMemberAdminFrame(this, getWidth(), getHeight(), library.getMembers().get(selectedRow));
 				setEnabled(false);
+				ViewMemberAdminFrame viewMember = new ViewMemberAdminFrame(this, getWidth(), getHeight(), 
+						library.searchMember(memberTable.getValueAt(selectedRow, 0).toString()));
+				
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
 			}

@@ -29,7 +29,7 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 	private AdminMemberFrame adminMemberFrame;
 	
 	// Add Form
-	private JPanel leftFormPanel = new JPanel();
+	private JPanel containerPanel = new JPanel();
 	private JLabel titleLbl = new JLabel("Add Member");
 	private JLabel idLbl = new JLabel("ID");
 	private JTextField idTxt = new JTextField();
@@ -51,101 +51,101 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 	public void initComponent() {
 		addWindowListener(this);
 		
-		// Left Form
-		GridBagLayout leftFormLayout = new GridBagLayout();
-		GridBagConstraints leftFormConst = new GridBagConstraints();
-		leftFormPanel.setLayout(leftFormLayout);
-		leftFormPanel.setBackground(Color.GRAY);
+		// Container Form
+		GridBagLayout containerLayout = new GridBagLayout();
+		GridBagConstraints containerConst = new GridBagConstraints();
+		containerPanel.setLayout(containerLayout);
+		containerPanel.setBackground(Color.GRAY);
 		
 		// Title Label
-		leftFormConst.gridx = 0;	
-		leftFormConst.gridy = 0;
-		leftFormConst.gridwidth = 2;
-		leftFormConst.weightx= 1; 
+		containerConst.gridx = 0;	
+		containerConst.gridy = 0;
+		containerConst.gridwidth = 2;
+		containerConst.weightx= 1; 
 		titleLbl.setFont(new Font("Tahoma", Font.BOLD, 32));
-		leftFormConst.insets = new Insets(0, 0, 30, 0);
-		leftFormPanel.add(titleLbl, leftFormConst);
+		containerConst.insets = new Insets(0, 0, 30, 0);
+		containerPanel.add(titleLbl, containerConst);
 		
 		// ID Label
-		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.gridwidth = 1;
-		leftFormConst.weightx = 0.2;
-		leftFormConst.ipady = 10;
-		leftFormConst.insets = new Insets(5, 0, 5, 0);
-		leftFormPanel.add(idLbl, leftFormConst);
+		containerConst.fill = GridBagConstraints.HORIZONTAL;
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 1;
+		containerConst.weightx = 0.2;
+		containerConst.ipady = 10;
+		containerConst.insets = new Insets(5, 0, 5, 0);
+		containerPanel.add(idLbl, containerConst);
 		
 		// ID text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(idTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(idTxt, containerConst);
 		
 		// Name Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(nameLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(nameLbl, containerConst);
 		
 		// Name text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(nameTxt, leftFormConst);	
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(nameTxt, containerConst);	
 		
 		// BirthDate Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(birthDateLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(birthDateLbl, containerConst);
 		
 		// BirthDate Chooser
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(birthDateChooser, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(birthDateChooser, containerConst);
 	
 		// Email Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(emailLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(emailLbl, containerConst);
 		
 		// Email Text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(emailTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(emailTxt, containerConst);
 
 		// Phone Number Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(phoneLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(phoneLbl, containerConst);
 		
 		// Phone Number Text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(phoneTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(phoneTxt, containerConst);
 		
 		// Password Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(passwordLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(passwordLbl, containerConst);
 		
 		// Password Text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(passwordTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(passwordTxt, containerConst);
 		
 		// Join Date Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormPanel.add(joinDateLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(joinDateLbl, containerConst);
 		
 		// Join Date Chooser
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		leftFormPanel.add(joinDateTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(joinDateTxt, containerConst);
 		
 		JPanel buttonForm = new JPanel();
 		buttonForm.setLayout(new GridBagLayout());
@@ -165,17 +165,17 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 		cancelBtn.addActionListener(this);
 		buttonForm.add(cancelBtn, buttonConst);
 		
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.gridwidth = 2;
-		leftFormPanel.add(buttonForm, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 2;
+		containerPanel.add(buttonForm, containerConst);
 		
 		setLayout(new GridBagLayout());
 		GridBagConstraints formConst = new GridBagConstraints();
 		formConst.insets = new Insets(0, 100, 0, 100);
 		formConst.weightx = 1.0;
 		formConst.fill = GridBagConstraints.HORIZONTAL;
-		add(leftFormPanel, formConst);
+		add(containerPanel, formConst);
 	}
 	
 	public void exitFrame() {
@@ -209,9 +209,11 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 		setSize((int)(width / 1.125), (int)(height / 1.125));
 		setLocationRelativeTo(adminMemberFrame);
 		idTxt.setText(library.generateIdMember());
-		idTxt.setEditable(false);
+		idTxt.setEnabled(false);
+		idTxt.setDisabledTextColor(Color.RED);
 		joinDateTxt.setText(LocalDate.now().toString());
-		joinDateTxt.setEditable(false);
+		joinDateTxt.setEnabled(false);
+		joinDateTxt.setDisabledTextColor(Color.RED);
 		
 		setTitle("Add Member");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);

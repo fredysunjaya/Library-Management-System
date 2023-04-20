@@ -1,0 +1,312 @@
+package librarymanagementsystem;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JYearChooser;
+
+
+public class AdminMemberFrame extends JFrame implements ActionListener {
+	private Library library;
+	
+	// North
+	private JPanel menubar = new JPanel();
+	private JButton bookBtn = new JButton("Books", new ImageIcon("resources/bookIcon.png"));
+	private JButton memberBtn = new JButton("Members", new ImageIcon("resources/membersIcon.png"));
+	private JButton issuedBtn = new JButton("Issued Books", new ImageIcon("resources/issuedIcon.png"));
+	private JButton recordBtn = new JButton("Records", new ImageIcon("resources/recordIcon.png"));
+	private JButton logoutBtn = new JButton("Log Out", new ImageIcon("resources/logoutIcon.png"));
+	
+	// Center
+	private JTable memberTable = new JTable();
+	private Object[] memberColumn = {"ID", "Name", "Birthdate", "Email Address", "Phone Number"};
+	private JScrollPane memberScrollPane = new JScrollPane(memberTable);
+	private DefaultTableModel dtmMember;
+	private DefaultTableModel dtmSearchMember;
+	
+	// South
+	private JPanel formPanel = new JPanel();
+	private JPanel leftFormPanel = new JPanel();
+	private JPanel rightFormPanel = new JPanel();
+	private JTextField searchTxt = new JTextField();
+	private JButton searchBtn = new JButton("Search");
+	private JButton resetBtn = new JButton("Reset");
+	private JButton addBtn = new JButton("Add");
+	private JButton deleteBtn = new JButton("Delete");
+	private JButton viewBtn = new JButton("View");
+	
+	public void loadTable(ArrayList<Member> members) {
+		memberTable.getTableHeader().setReorderingAllowed(false);
+		memberTable.getTableHeader().setResizingAllowed(false);
+		memberTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		
+		dtmMember = new DefaultTableModel(memberColumn, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
+		
+		for(Member member : members) {
+			Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum()};
+			
+			dtmMember.addRow(memberFile);
+		}
+		memberTable.setModel(dtmMember);
+	} 
+	
+	public void addData(String id, String name, LocalDate birthDate, String email, String phoneNum, String password, LocalDate joinDate) {
+		Object[] row = {id, name, birthDate, email, phoneNum, password};	
+		library.addMember(id, name, birthDate, email, phoneNum, password, joinDate);
+		dtmMember.addRow(row);
+		memberTable.invalidate();
+	}
+	
+	public void initComponent(ArrayList<Member> members) {
+		setLayout(new BorderLayout());
+		
+		GridBagLayout menubarLayout = new GridBagLayout();
+		GridBagConstraints menubarConst = new GridBagConstraints();
+		menubar.setLayout(menubarLayout);
+		
+		// Books button
+		menubarConst.gridx = 0;
+		menubarConst.weightx = 0.25;
+		menubarConst.insets = new Insets(10, 0, 10, 0);
+		bookBtn.addActionListener(this);
+		bookBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+	    bookBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+		menubar.add(bookBtn, menubarConst);
+		
+		// Members Button
+		menubarConst.gridx++;
+		memberBtn.addActionListener(this);
+		memberBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+	    memberBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+		menubar.add(memberBtn, menubarConst);
+		
+		// Issued Book Button
+		menubarConst.gridx++;
+		issuedBtn.addActionListener(this);
+		issuedBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+	    issuedBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+		menubar.add(issuedBtn, menubarConst);
+		
+		// Records of Issued Book Button
+		menubarConst.gridx++;
+		recordBtn.addActionListener(this);
+		recordBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+	    recordBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+		menubar.add(recordBtn, menubarConst);
+		
+		// Logout Button
+		menubarConst.gridx++;
+		logoutBtn.addActionListener(this);
+		logoutBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+	    logoutBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+		menubar.add(logoutBtn, menubarConst);
+		
+		// Table of Members
+		loadTable(members);
+		
+		// Member Form
+		GridBagLayout formLayout = new GridBagLayout();
+		GridBagConstraints formConst = new GridBagConstraints();
+		formConst.fill = GridBagConstraints.HORIZONTAL;
+		formConst.insets = new Insets(20, 30, 30, 30);
+		formPanel.setLayout(formLayout);
+	
+		// Left Form
+		GridBagLayout leftFormLayout = new GridBagLayout();
+		GridBagConstraints leftFormConst = new GridBagConstraints();
+		leftFormPanel.setLayout(leftFormLayout);
+		leftFormPanel.setBackground(Color.GREEN);
+		
+		// Search Text Field
+		leftFormConst.gridx = 0;
+		leftFormConst.gridy = 0;
+		leftFormConst.insets = new Insets(0, 5, 0, 5);
+		leftFormConst.weightx = 0.9;
+		leftFormConst.fill = GridBagConstraints.HORIZONTAL;
+		leftFormPanel.add(searchTxt, leftFormConst);
+		
+		// Search Button
+		leftFormConst.gridx = GridBagConstraints.RELATIVE;
+		leftFormConst.weightx = 0.05;
+		searchBtn.addActionListener(this);
+		leftFormPanel.add(searchBtn, leftFormConst);
+		
+		// Reset Button
+		leftFormConst.gridx = GridBagConstraints.RELATIVE;
+		resetBtn.addActionListener(this);
+		leftFormPanel.add(resetBtn, leftFormConst);
+		
+		// Right Form
+		GridBagLayout rightFormLayout = new GridBagLayout();
+		GridBagConstraints rightFormConst = new GridBagConstraints();
+		rightFormPanel.setLayout(rightFormLayout);
+		rightFormPanel.setBackground(Color.GREEN);
+		
+		// Add Button
+		rightFormConst.gridx = 0;
+		rightFormConst.gridy++;
+		rightFormConst.weightx = 1;
+		rightFormConst.fill = GridBagConstraints.HORIZONTAL;
+		rightFormConst.insets = new Insets(0, 5, 0, 5);
+		addBtn.addActionListener(this);
+		rightFormPanel.add(addBtn, rightFormConst);
+		
+		// Delete Button
+		rightFormConst.gridx++;
+		deleteBtn.addActionListener(this);
+		rightFormPanel.add(deleteBtn, rightFormConst);
+		
+		// View Button
+		rightFormConst.gridx++;
+		viewBtn.addActionListener(this);
+		rightFormPanel.add(viewBtn, rightFormConst);
+
+		memberTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		formConst.weightx = 0.5;
+		formPanel.add(leftFormPanel, formConst);
+		formConst.weightx = 0.25;
+		formPanel.add(new JPanel(), formConst);
+		formConst.weightx = 0.25;
+		formPanel.add(rightFormPanel, formConst);
+		
+		add(menubar, "North");
+		add(memberScrollPane, "Center");
+		add(formPanel, "South");
+	}
+	
+	public AdminMemberFrame(Library library, int width, int height, Point point) {
+		this.library = library;
+		
+		initComponent(library.getMembers());
+		setSize(width, height);
+		setTitle("Library Management System");
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLocation(point);
+//		setVisible(true);
+	}
+
+	public AdminMemberFrame() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(bookBtn)) {
+			Point point = getLocationOnScreen();
+			library.changeFrame(new AdminBookFrame(library, getWidth(), getHeight(), point), this);
+			
+		} else if(e.getSource().equals(memberBtn)) {
+			
+		} else if(e.getSource().equals(issuedBtn)) {
+			
+		} else if(e.getSource().equals(recordBtn)) {
+			
+		} else if(e.getSource().equals(logoutBtn)) {
+			library.logout(this, getWidth(), getHeight());
+			
+		} else if(e.getSource().equals(addBtn)) {
+			AddMemberFormAdminFrame addMemberForm = new AddMemberFormAdminFrame(library, this, getWidth(), getHeight());
+			setEnabled(false);
+			
+		} else if(e.getSource().equals(deleteBtn)) {
+			int selectedRow = memberTable.getSelectedRow();
+			
+			if(selectedRow != -1) {
+				int answer = JOptionPane.showConfirmDialog(this, "Are you sure to delete this data?", "Delete Book", 
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				
+				if(answer == JOptionPane.YES_OPTION) {
+					Member member = library.searchMember(memberTable.getValueAt(selectedRow, 1).toString());
+					
+					library.removeMember(selectedRow);
+					loadTable(library.getMembers());
+					memberTable.setModel(dtmMember);
+					memberTable.invalidate();				
+				}
+			} else {
+				JOptionPane.showMessageDialog(this, "Choose Data to Delete", "Error", JOptionPane.INFORMATION_MESSAGE);
+			}
+		} else if(e.getSource().equals(viewBtn)) {			
+			int selectedRow = memberTable.getSelectedRow();
+			
+			if(selectedRow != -1) {
+				ViewMemberAdminFrame viewMember = new ViewMemberAdminFrame(this, getWidth(), getHeight(), library.getMembers().get(selectedRow));
+				setEnabled(false);
+			} else {
+				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
+			}
+		} else if(e.getSource().equals(searchBtn)) {
+			String searchValue = searchTxt.getText();
+			
+			if(!searchValue.equals("")) {
+				dtmSearchMember = new DefaultTableModel(memberColumn, 0) {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				};
+				ArrayList<Member> searchedMembers = library.filterMembers(searchValue);
+				
+				for(Member member : searchedMembers) {
+					Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum()};
+					dtmSearchMember.addRow(memberFile);
+				}
+				
+				memberTable.setModel(dtmSearchMember);
+				memberTable.invalidate();
+			}
+		} else if(e.getSource().equals(resetBtn)) {
+			if(!searchTxt.getText().equals("")) {
+				memberTable.setModel(dtmMember);
+				memberTable.invalidate();				
+				searchTxt.setText("");
+			}
+		}
+	}
+}

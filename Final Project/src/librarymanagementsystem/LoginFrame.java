@@ -156,13 +156,13 @@ public class LoginFrame extends JFrame implements ActionListener {
 		// TODO Auto-generated method stub
 		if(e.getSource().equals(loginBtn)) {
 			String[] account = {loginIdTxt.getText(), String.valueOf(loginPasswordTxt.getPassword())};
-			System.out.println(account[1]);
+//			System.out.println(account[1]);
 			int result = library.checkAccount(account);
 			
-			if(result == 1) {
+			if(result == -1) {
 				library.loginAdmin(getWidth(), getHeight(), getLocationOnScreen());
-			} else if(result == 2) {
-				
+			} else if(result >= 0) {
+				library.loginMember(getWidth(), getHeight(), getLocationOnScreen(), library.getMembers().get(result));
 			} else{
 				JOptionPane.showConfirmDialog(null, 
 				"Wrong ID or Password",

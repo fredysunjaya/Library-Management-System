@@ -44,6 +44,7 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 	private AdminBookFrame adminBookFrame = new AdminBookFrame();
 	
 	// Add/Update Form
+	private JPanel containerPanel = new JPanel();
 	private JLabel titleLbl = new JLabel("ADD BOOK");
 	private JLabel isbnLbl = new JLabel("ISBN");
 	private JTextField isbnTxt = new JTextField();
@@ -77,121 +78,120 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 		
 		addWindowListener(this);
 		
-		JPanel containerForm = new JPanel();
 		
-		// JInternal Frame Form
-		GridBagLayout leftFormLayout = new GridBagLayout();
-		GridBagConstraints leftFormConst = new GridBagConstraints();
-		containerForm.setLayout(leftFormLayout);
+		// Container Form
+		GridBagLayout containerlayout = new GridBagLayout();
+		GridBagConstraints containerConst = new GridBagConstraints();
+		containerPanel.setLayout(containerlayout);
 		
 		// Title Label
-		leftFormConst.gridx = 0;	
-		leftFormConst.gridy = 0;
-		leftFormConst.gridwidth = 2;
-		leftFormConst.weightx= 1; 
+		containerConst.gridx = 0;	
+		containerConst.gridy = 0;
+		containerConst.gridwidth = 2;
+		containerConst.weightx= 1; 
 		titleLbl.setFont(new Font("Tahoma", Font.BOLD, 32));
-		leftFormConst.insets = new Insets(0, 0, 30, 0);
-		containerForm.add(titleLbl, leftFormConst);
+		containerConst.insets = new Insets(0, 0, 30, 0);
+		containerPanel.add(titleLbl, containerConst);
 		
 		// ISBN Label
-//		leftFormConst.anchor = GridBagConstraints.LINE_END;
-		leftFormConst.fill = GridBagConstraints.HORIZONTAL; 
-		leftFormConst.gridwidth = 1;
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormConst.ipady = 10;
-		leftFormConst.insets = new Insets(5, 0, 5, 0);
-		containerForm.add(isbnLbl, leftFormConst);
+//		containerConst.anchor = GridBagConstraints.LINE_END;
+		containerConst.fill = GridBagConstraints.HORIZONTAL; 
+		containerConst.gridwidth = 1;
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerConst.ipady = 10;
+		containerConst.insets = new Insets(5, 0, 5, 0);
+		containerPanel.add(isbnLbl, containerConst);
 		
 		// ISBN text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(isbnTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(isbnTxt, containerConst);
 		
 		// Title Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(nameLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(nameLbl, containerConst);
 		
 		// Title text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(nameTxt, leftFormConst);	
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(nameTxt, containerConst);	
 		
 		// Author Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(authorLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(authorLbl, containerConst);
 		
 		// Author text field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(authorTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(authorTxt, containerConst);
 		
 		// Pages Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(pagesLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(pagesLbl, containerConst);
 		
 		// Pages field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(pagesTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(pagesTxt, containerConst);
 		
 		// Publisher Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(publisherLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(publisherLbl, containerConst);
 		
 		// Publisher field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(publisherTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(publisherTxt, containerConst);
 		
 		// Publication Year Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(publicationYearLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(publicationYearLbl, containerConst);
 		
 		// Publication Year field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(publicationYearTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(publicationYearTxt, containerConst);
 		
 		// Synopsis Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		containerForm.add(synopsisLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(synopsisLbl, containerConst);
 		
 		// Synopsis field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
 		synopsisArea.setRows(5);
 		synopsisArea.setColumns(20);
 		// line wrapping
 		synopsisArea.setLineWrap(true);
 		// word wrapping
 		synopsisArea.setWrapStyleWord(true);
-		containerForm.add(synopsisPane, leftFormConst);
+		containerPanel.add(synopsisPane, containerConst);
 		
 		// Quantity Label
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.weightx = 0.2;
-		leftFormConst.ipady = 10;
-		containerForm.add(quantityLbl, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerConst.ipady = 10;
+		containerPanel.add(quantityLbl, containerConst);
 		
 		// Quantity field
-		leftFormConst.gridx++;
-		leftFormConst.weightx = 0.8;
-		containerForm.add(quantityTxt, leftFormConst);
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(quantityTxt, containerConst);
 		
 		JPanel buttonForm = new JPanel();
 		buttonForm.setLayout(new GridBagLayout());
@@ -211,17 +211,17 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 		cancelBtn.addActionListener(this);
 		buttonForm.add(cancelBtn, buttonConst);
 		
-		leftFormConst.gridx = 0;
-		leftFormConst.gridy++;
-		leftFormConst.gridwidth = 2;
-		containerForm.add(buttonForm, leftFormConst);
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 2;
+		containerPanel.add(buttonForm, containerConst);
 
 		setLayout(new GridBagLayout());
-		GridBagConstraints containerConst = new GridBagConstraints();
-		containerConst.insets = new Insets(0, 100, 0, 100);
-		containerConst.weightx = 1.0;
-		containerConst.fill = GridBagConstraints.HORIZONTAL;
-		add(containerForm, containerConst);
+		GridBagConstraints formConst = new GridBagConstraints();
+		formConst.insets = new Insets(0, 100, 0, 100);
+		formConst.weightx = 1.0;
+		formConst.fill = GridBagConstraints.HORIZONTAL;
+		add(containerPanel, formConst);
 //		setResizable(false);
 	}
 

@@ -5,28 +5,28 @@
 		<item key="DIALOG_Y_ORIGIN" value="349"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value=""/>
+		<item key="selection" value="searchRecord"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="searchRecord"/>
+			<item value="changeFrame"/>
+			<item value="admin"/>
+			<item value="checkAccount"/>
+			<item value="issue"/>
+			<item value="searchMember"/>
+			<item value="changeIss"/>
+			<item value="closeForm"/>
+			<item value="compareto"/>
+			<item value="ipady"/>
+			<item value="type"/>
+			<item value="100"/>
+			<item value="dtmSearchBook"/>
 			<item value="green"/>
 			<item value="super"/>
-			<item value="addWind"/>
-			<item value="addWin"/>
-			<item value="0.75"/>
-			<item value="0.25"/>
-			<item value="japan&apos;s post"/>
-			<item value="japan&apos;s post-war"/>
-			<item value="japan&apos;s post war"/>
-			<item value="japan post"/>
-			<item value="japan "/>
-			<item value="synopsisPane"/>
-			<item value="NONE"/>
-			<item value="0.95"/>
-			<item value="0.05"/>
 		</list>
 		<list key="replacehistory">
 			<item value="0.8"/>

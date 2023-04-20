@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,10 +15,13 @@ import javax.swing.JFrame;
 import javax.swing.text.DateFormatter;
 
 public class Library {
+	private LocalDate today = LocalDate.now();
 	private LoginFrame loginFrame;
 	private AdminBookFrame adminBookFrame;
 	private AdminMemberFrame adminMemberFrame;
-	private AdminIssuedFrame adminIssuedFrame;
+	private AdminIssuedRecordsFrame adminIssuedFrame;
+	private MemberBookFrame memberBookFrame;
+	private MemberIssuedRecordsFrame memberIssuedRecordsFrame;
 
 	private ArrayList<Book> books = new ArrayList<>();
 	private ArrayList<Member> members = new ArrayList<>();
@@ -113,6 +117,13 @@ public class Library {
 				LocalDate returnDate = LocalDate.parse(line[4]);
 				double fine = 0.0;
 				
+				if(!line[5].equalsIgnoreCase("Returned") && returnDate.compareTo(today) >= 0) {
+					line[5] = "Issued";
+				} else if(!line[5].equalsIgnoreCase("Returned") && returnDate.compareTo(today) <= 0) {
+					line[5] = "Late";
+					fine = ChronoUnit.DAYS.between(today, returnDate) * 0.1;
+				}
+				
 				if(!line[6].equals("-")) {
 					fine = Double.parseDouble(line[6]);
 				}
@@ -150,17 +161,30 @@ public class Library {
 	public int checkAccount(String[] account) {
 		for(Admin admin : admins) {
 			if(account[0].equals(admin.getId()) && account[1].equals(admin.getPassword())) {
-				return 1;
+				return -1;
 			}
 		}
+		
+		int i = 0;
 		
 		for(Member member : members) {
 			if(account[0].equals(member.getId()) && account[1].equals(member.getPassword())) {
-				return 2;
+				return i;
 			}
+			i++;
 		}
 		
-		return 0;
+		return -2;
+	}
+	
+	public String generateIdMember() {
+		return String.valueOf(Integer.parseInt(members.get(members.size() - 1).getId()) + 1);
+	}
+	
+	public String generateIdRecord(String memberId, String isbn, LocalDate issueDate, LocalDate returnDate) {
+		String id = memberId + isbn.substring((isbn.length() / 2) - 1, (isbn.length() / 2) + 3) + issueDate.getDayOfMonth() + returnDate.getDayOfMonth();
+		
+		return id;
 	}
 	
 	public void addBook(String name, String author, int publishYear, int pages, String isbn, String publisher,
@@ -168,8 +192,8 @@ public class Library {
 		books.add(new Book(name, author, publishYear, pages, isbn, publisher, synopsis, quantity));
 	}
 	
-	public void removeBook(int selectedRow) {
-		books.remove(selectedRow);
+	public void removeBook(Book book) {
+		books.remove(book);
 	}
 	
 	public void updateBook(int selectedRow, String name, String author, int publishYear, int pages, String isbn, String publisher,
@@ -192,15 +216,36 @@ public class Library {
 		members.add(new Member(id, name, birthDate, email, phoneNum, password, joinDate));
 	}
 	
-	public void removeMember(int selectedRow) {
-		members.remove(selectedRow);
+	public void updateMember(int selectedRow, String email, String phoneNum, String password) {
+		Member member = members.get(selectedRow);
+		
+//		member.setId(id);
+//		member.setName(name);
+//		member.setBirthDate(birthDate);
+		member.setEmail(email);
+		member.setPhoneNum(phoneNum);
+		member.setPassword(password);
+//		member.setJoinDate(joinDate);
+		
+		members.set(selectedRow, member);
 	}
 	
-	public void addIssuedBook(String id, Member member, Book book, LocalDate issueDate, LocalDate returnDate, String status,double fine) {
+	public void removeMember(Member member) {
+		members.remove(member);
+	}
+	
+	public void addIssuedBook(Member member, Book book, LocalDate issueDate, LocalDate returnDate, String status, double fine) {
+		String id = generateIdRecord(member.getId(), book.getIsbn(), issueDate, returnDate);
+		
 		issuedBooks.add(new IssuedBook(id, member, book, issueDate, returnDate, status, fine));
+//		System.out.println(id);
+//		System.out.println(member.getName());
 	}
 	
 	public void changeIssuedBook(IssuedBook issuedBook) {
+		if(issuedBook.getReturnDate().compareTo(today) != 0) {
+			issuedBook.setReturnDate(today);
+		}
 		issuedBook.setStatus("Returned");
 	}
 	
@@ -263,10 +308,6 @@ public class Library {
 		return result;
 	}
 	
-	public String generateIdMember() {
-		return String.valueOf(members.size() + 1);
-	}
-	
 	public String[] checkNewMember(String name, String birthDate, String email, String phoneNum, String password) {
 		String error = "";
 		String[] result = new String[6];
@@ -315,19 +356,104 @@ public class Library {
 		return result;
 	}
 	
-	public Member searchMember(String name) {
+	public String[] checkIssuedBook(String isbn, String name, LocalDate issueDate, LocalDate returnDate) {
+		String error = "";
+		String[] result = new String[5];
+		
+		if(isbn.equals("")) {
+			error = error.concat("ISBN can't be empty");
+		} else {
+			result[0] = isbn;
+		}
+		
+		if(name.equals("")) {
+			error = error.concat("\nBook title can't be empty");
+		} else {
+			result[1] = name;
+		}
+		
+		if(issueDate != null && returnDate != null) {
+			if(returnDate.compareTo(issueDate) < 0) {
+				error = error.concat("\nReturn date can't be set before the issue date");
+			} else if(issueDate.compareTo(today) < 0 || returnDate.compareTo(today) < 0) {
+				error = error.concat("\nIssue Date or Return Date can't be set before today");			
+			} else if(issueDate.compareTo(returnDate) == 0) {
+				error = error.concat("\nIssue Date and Return Date can't be on the same day");
+			} 
+		} else {
+			if(issueDate == null) {
+				error = error.concat("\nIssue Date can't be empty");
+			} else {
+				result[2] = issueDate.toString();			
+			}
+			
+			if(returnDate == null) {
+				error = error.concat("\nreturn Date can't be empty");
+			} else {
+				result[3] = returnDate.toString();			
+			}
+		}	
+		
+		result[4] = error;
+		
+		return result;
+	}
+	
+	public Member searchMember(String id) {
 		for(Member member : members) {
-			if(member.getName().equals(name)) {
+			if(member.getId().equals(id)) {
 				return member;
 			}
 		}
 		return null;
 	}
 	
-	public Book searchBook(String name) {
+	public int searchMemberPos(String id) {
+		int i = 0;
+		
+		for(Member member : members) {
+			if(member.getId().equals(id)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	public Book searchBook(String isbn) {
 		for(Book book : books) {
-			if(book.getIsbn().equals(name)) {
+			if(book.getIsbn().equals(isbn)) {
 				return book;
+			}
+		}
+		return null;
+	}
+	
+	public int searchBookPos(String isbn) {
+		int i = 0;
+		
+		for(Book book : books) {
+			if(book.getIsbn().equals(isbn)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	public IssuedBook searchRecord(String id) {
+		for(IssuedBook issuedBook : issuedBooks) {
+			if(issuedBook.getId().equals(id)) {
+				return issuedBook;
+			}
+		}
+		return null;
+	}
+	
+	public IssuedBook searchRecord(String id, ArrayList<IssuedBook> memberIssuedBooks) {
+		for(IssuedBook issuedBook : memberIssuedBooks) {
+			if(issuedBook.getId().equals(id)) {
+				return issuedBook;
 			}
 		}
 		return null;
@@ -361,15 +487,104 @@ public class Library {
 		return searchedMembers;
 	}
 	
-	public ArrayList<IssuedBook> filterRecords(String value) {
+	public ArrayList<IssuedBook> filterRecords(String value, boolean type) {
 		ArrayList<IssuedBook> searchedRecords = new ArrayList<>();
 		
-		for(IssuedBook issuedBook : issuedBooks) {
-			if(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
-					issuedBook.getMember().getName().toLowerCase().contains(value.toLowerCase()) ||
-					issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
-					issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase())) {
-				searchedRecords.add(issuedBook);
+		if(type) {
+			for(IssuedBook issuedBook : issuedBooks) {
+				if(!(issuedBook.getStatus().equals("Returned")) &&
+						(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getMember().getName().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+						issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase()))) {
+					searchedRecords.add(issuedBook);
+				}
+			}			
+		} else {
+			for(IssuedBook issuedBook : issuedBooks) {
+				if(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getMember().getName().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+						issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase())) {
+					searchedRecords.add(issuedBook);
+				}
+			}
+		}
+		
+		return searchedRecords;
+	}
+	
+	public ArrayList<IssuedBook> filterRecords(String value, boolean type, ArrayList<IssuedBook> memberIssuedBooks) {
+		ArrayList<IssuedBook> searchedRecords = new ArrayList<>();
+		
+		if(type) {
+			for(IssuedBook issuedBook : memberIssuedBooks) {
+				if(!(issuedBook.getStatus().equals("Returned")) &&
+						(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getMember().getName().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+						issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase()))) {
+					searchedRecords.add(issuedBook);
+				}
+			}			
+		} else {
+			for(IssuedBook issuedBook : memberIssuedBooks) {
+				if(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getMember().getName().toLowerCase().contains(value.toLowerCase()) ||
+						issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+						issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase())) {
+					searchedRecords.add(issuedBook);
+				}
+			}
+		}
+		
+		return searchedRecords;
+	}
+	
+	public ArrayList<IssuedBook> filterRecordsByDate(LocalDate fromDate, LocalDate toDate, boolean type) {
+		ArrayList<IssuedBook> searchedRecords = new ArrayList<>();
+		
+		if(type) {
+			for(IssuedBook issuedBook : issuedBooks) {
+				if(!issuedBook.getStatus().equals("Returned") && 
+						issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+						issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+					
+					searchedRecords.add(issuedBook);
+				}
+			}
+		} else {
+			for(IssuedBook issuedBook : issuedBooks) {
+				if(issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+						issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+					
+					searchedRecords.add(issuedBook);
+				}
+			}
+		}
+		
+		return searchedRecords;
+	}
+	
+	public ArrayList<IssuedBook> filterRecordsByDate(LocalDate fromDate, LocalDate toDate, boolean type, ArrayList<IssuedBook> memberIssuedBooks) {
+		ArrayList<IssuedBook> searchedRecords = new ArrayList<>();
+		
+		if(type) {
+			for(IssuedBook issuedBook : memberIssuedBooks) {
+				if(!issuedBook.getStatus().equals("Returned") && 
+						issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+						issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+					
+					searchedRecords.add(issuedBook);
+				}
+			}
+		} else {
+			for(IssuedBook issuedBook : memberIssuedBooks) {
+				if(issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+						issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+					
+					searchedRecords.add(issuedBook);
+				}
 			}
 		}
 		
@@ -389,9 +604,16 @@ public class Library {
 		adminBookFrame.setVisible(true);
 	}
 	
+	public void loginMember(int width, int height, Point point, Member member) {
+		loginFrame.dispose();
+		
+		memberBookFrame = new MemberBookFrame(this, width, height, point, member);
+		memberBookFrame.setVisible(true);
+	}
+	
 	public void changeFrame(JFrame dest, JFrame src) {
 		dest.setVisible(true);
-		src.setVisible(false);
+		src.dispose();
 	}
 	
 	public Library() {
@@ -402,9 +624,7 @@ public class Library {
 		readBooks();
 		readMembers();
 		readRecords();
-//		loginFrame = new LoginFrame(this, 1280, 720);
-		adminIssuedFrame = new AdminIssuedFrame(this, 1280, 720, new Point(0,0), true);
-		adminIssuedFrame.setVisible(true);
+		loginFrame = new LoginFrame(this, 1280, 720);
 	}
 	
 	public ArrayList<Book> getBooks() {

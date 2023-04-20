@@ -77,9 +77,10 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 			dtmBook.addRow(bookFile);
 		}
 		bookTable.setModel(dtmBook);
+		
+		bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+		bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
 	} 
-	
-	
 	
 	public void addData(String name, String author, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
 		Object[] row = {isbn, name, author, pages, publisher, publishYear, synopsis, quantity};
@@ -89,18 +90,12 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 	}
 	
 	public void updateData(String name, String author, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
-		int selectedRow = bookTable.getSelectedRow();
+		int selectedRow = library.searchBookPos(isbn);
 		
-		dtmBook.setValueAt(isbn, selectedRow, 0);
-		dtmBook.setValueAt(name, selectedRow, 1);
-		dtmBook.setValueAt(author, selectedRow, 2);
-		dtmBook.setValueAt(pages, selectedRow, 3);
-		dtmBook.setValueAt(publisher, selectedRow, 4);
-		dtmBook.setValueAt(publishYear, selectedRow, 5);
-		dtmBook.setValueAt(synopsis, selectedRow, 6);
-		dtmBook.setValueAt(quantity, selectedRow, 7);
 		library.updateBook(selectedRow, name, author, publishYear, pages, isbn, publisher, synopsis, quantity);
 		
+		loadTable(library.getBooks());
+		bookTable.setModel(dtmBook);
 		bookTable.invalidate();
 	}
 	
@@ -113,7 +108,7 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 		
 		// Books button
 		menubarConst.gridx = 0;
-		menubarConst.weightx = 0.25;
+		menubarConst.weightx = 0.2;
 		menubarConst.insets = new Insets(10, 0, 10, 0);
 		bookBtn.addActionListener(this);
 		bookBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -247,10 +242,6 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void closeForm(JInternalFrame internalFrame) {
-		
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -261,8 +252,12 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 			library.changeFrame(new AdminMemberFrame(library, getWidth(), getHeight(), point), this);
 			
 		} else if(e.getSource().equals(issuedBtn)) {
+			Point point = getLocationOnScreen();
+			library.changeFrame(new AdminIssuedRecordsFrame(library, getWidth(), getHeight(), point, true), this);
 			
 		} else if(e.getSource().equals(recordBtn)) {
+			Point point = getLocationOnScreen();
+			library.changeFrame(new AdminIssuedRecordsFrame(library, getWidth(), getHeight(), point, false), this);
 			
 		} else if(e.getSource().equals(logoutBtn)) {
 			library.logout(this, getWidth(), getHeight());
@@ -271,6 +266,17 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 			AddUpdateBookFormAdminFrame addBookForm = new AddUpdateBookFormAdminFrame(library, this, getWidth(), getHeight());
 			setEnabled(false);
 			
+		} else if(e.getSource().equals(updateBtn)) {
+			int selectedRow = bookTable.getSelectedRow();
+			
+			if(selectedRow != -1) {
+				AddUpdateBookFormAdminFrame updateBookForm = new AddUpdateBookFormAdminFrame(library, this, getWidth(), getHeight(), 
+						library.searchBook(bookTable.getValueAt(selectedRow, 0).toString()));
+				
+				setEnabled(false);
+			} else {
+				JOptionPane.showMessageDialog(this, "Choose Data to Update", "Error", JOptionPane.INFORMATION_MESSAGE);
+			}
 		} else if(e.getSource().equals(deleteBtn)) {
 			int selectedRow = bookTable.getSelectedRow();
 			
@@ -279,28 +285,24 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				
 				if(answer == JOptionPane.YES_OPTION) {
-					dtmBook.removeRow(selectedRow);
-					library.removeBook(selectedRow);
+					Book book = library.searchBook(bookTable.getValueAt(selectedRow, 0).toString());
+					
+					library.removeBook(book);
+					loadTable(library.getBooks());
+					bookTable.setModel(dtmBook);
 					bookTable.invalidate();					
 				}
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to Delete", "Error", JOptionPane.INFORMATION_MESSAGE);
 			}
-		} else if(e.getSource().equals(updateBtn)) {
-			int selectedRow = bookTable.getSelectedRow();
-			
-			if(selectedRow != -1) {
-				AddUpdateBookFormAdminFrame updateBookForm = new AddUpdateBookFormAdminFrame(library, this, getWidth(), getHeight(), library.getBooks().get(selectedRow));
-				setEnabled(false);
-			} else {
-				JOptionPane.showMessageDialog(this, "Choose Data to Update", "Error", JOptionPane.INFORMATION_MESSAGE);
-			}
 		} else if(e.getSource().equals(viewBtn)) {
 			int selectedRow = bookTable.getSelectedRow();
 			
 			if(selectedRow != -1) {
-				ViewBookAdminFrame viewBookForm = new ViewBookAdminFrame(this, getWidth(), getHeight(), library.getBooks().get(selectedRow));
 				setEnabled(false);
+				ViewBookFrame viewBookForm = new ViewBookFrame(this, getWidth(), getHeight(), 
+						library.searchBook(bookTable.getValueAt(selectedRow, 0).toString()));
+				
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
 			}
