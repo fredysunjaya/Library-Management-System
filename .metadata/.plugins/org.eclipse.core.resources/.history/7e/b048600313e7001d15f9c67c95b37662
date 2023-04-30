@@ -1,0 +1,63 @@
+package Session10;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
+
+public class MainForm extends JFrame implements ActionListener{
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu menuFile = new JMenu("File");
+	private JMenu menuOption = new JMenu("Option");
+	private JMenuItem menuItemFileLogin = new JMenuItem("Login");
+	private JMenuItem menuItemFileForm2 = new JMenuItem("Form 2");
+	private LoginForm loginForm;
+	private JDesktopPane jdPane = new JDesktopPane();
+	
+	public MainForm() {
+		add(jdPane);
+		
+		setJMenuBar(menuBar);
+		
+		menuBar.add(menuFile);
+		menuBar.add(menuOption);
+		menuOption.setVisible(false);
+		
+		menuFile.add(menuItemFileLogin);
+//		menuItemFileLogin.setMnemonic(Isi sesuatu);
+		menuFile.add(new JSeparator());
+		menuFile.add(menuItemFileForm2);		
+		
+		menuItemFileLogin.addActionListener(this);
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setExtendedState(MAXIMIZED_BOTH);
+		setVisible(true);
+	}
+	
+	public static void main(String[] args) {
+		new MainForm();
+	}
+
+	public void doLogin() {
+		menuOption.setVisible(true);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(menuItemFileLogin)) {
+//			JOptionPane.showMessageDialog(null, "ASD");
+			if(loginForm == null || loginForm.isClosed()) {
+				loginForm = new LoginForm(this);
+				jdPane.add(loginForm);
+			}
+		}
+	}
+}

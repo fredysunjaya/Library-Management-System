@@ -1,0 +1,18 @@
+package Session01;
+
+import java.util.Scanner;
+
+public class alpNum {
+    public static void main(String[] args){
+        Scanner input = new Scanner(System.in);
+        String a;
+        a = input.next(); 
+        for(int i = 0; i < a.length(); i++){
+            // System.out.println(a.charAt(i));
+            if(!(Character.isAlphabetic(a.charAt(i)) || Character.isDigit(a.charAt(i)))){
+                System.out.println("Not Alphanumeric at index " + i);
+            }
+        }
+        input.close();
+    }
+}

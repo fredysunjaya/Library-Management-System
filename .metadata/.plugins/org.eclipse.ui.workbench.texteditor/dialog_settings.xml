@@ -5,15 +5,19 @@
 		<item key="DIALOG_Y_ORIGIN" value="349"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="searchRecord"/>
+		<item key="selection" value="checkNewBook"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="searchRecord"/>
+			<item value="checkNewBook"/>
 			<item value="changeFrame"/>
+			<item value="chec"/>
+			<item value="checknew"/>
+			<item value="checkissued"/>
+			<item value="searchRecord"/>
 			<item value="admin"/>
 			<item value="checkAccount"/>
 			<item value="issue"/>
@@ -23,10 +27,6 @@
 			<item value="compareto"/>
 			<item value="ipady"/>
 			<item value="type"/>
-			<item value="100"/>
-			<item value="dtmSearchBook"/>
-			<item value="green"/>
-			<item value="super"/>
 		</list>
 		<list key="replacehistory">
 			<item value="0.8"/>
