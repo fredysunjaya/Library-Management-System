@@ -62,10 +62,78 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 	private JTextArea synopsisArea = new JTextArea();
 	private JScrollPane synopsisPane = new JScrollPane(synopsisArea);
 	private JLabel quantityLbl = new JLabel("Quantity");
-	private JTextField quantityTxt = new JTextField();
+	private JFormattedTextField quantityTxt = new JFormattedTextField(formatter);
 	private JButton addBtn = new JButton("Add");
 	private JButton cancelBtn = new JButton("Cancel");
 	
+	public String[] checkNewBook(String name, String[] authors, String publishYear, String pages, String isbn, String publisher,
+			String synopsis, String quantity) {
+		String error = "";
+		String[] result = new String[9];
+		
+		if(isbn.equals("")) {
+			error = error.concat("ISBN can't be empty");			
+//			publishYear = (int) (Math.random() * ((2023 - 1400) + 1));
+		} else {
+			result[4] = isbn;
+		}
+		
+		if(name.equals("")) {
+			error = error.concat("\nBook title can't be empty");
+		} else {
+			result[0] = name;
+		}
+		
+		result[1] = "";
+		for(int i = 0; i < authors.length; i++) {
+			authors[i] = authors[i].trim();
+			if(authors[i].equals("") || authors[i].equals(" ")) {
+				if(i == 0) {
+					result[1] = result[1].concat("Anonymous");					
+				}
+			} else {
+				if(i == authors.length - 1) {
+					result[1] = result[1].concat(authors[i]);
+				} else {
+					result[1] = result[1].concat(authors[i] + ", ");
+				}
+			}			
+		}
+		
+		if(String.valueOf(pages).equals("") || Integer.parseInt(pages) <= 0) {
+			error = error.concat("\nPages can't be empty or smaller than 0");
+		} else { 
+			result[3] = pages;
+		}
+		
+		if(publisher.equals("")) {
+			error = error.concat("\nPublisher's name can't be empty");
+		} else {
+			result[5] = publisher;
+		}
+		
+		if(publishYear.equals("") || Integer.parseInt(publishYear) <= 1400) {
+			error = error.concat("\nPublication Year can't be empty or under 1400");
+		} else {
+			result[2] = publishYear;
+		}
+		
+		if(synopsis.equals("")) {
+			result[6] = "There is no synopsis";
+		} else {
+			result[6] = synopsis;
+		}
+		
+		if(String.valueOf(quantity).equals("") || Integer.parseInt(quantity) <= 0) {
+			error = error.concat("\nBook's quantity can't be empty or smaller than 0");				
+		} else {
+			result[7] = quantity;
+		}
+		
+		result[8] = error;
+		
+		return result;
+	}
 	
 	public void initComponent() {
 		// Agar saat number dimasukkan tidak ada grouping seperti ribu, juta, miliar, dst		
@@ -256,7 +324,7 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 		addBtn.setText("Update");
 		isbnTxt.setText(book.getIsbn());
 		nameTxt.setText(book.getName());
-		authorTxt.setText(book.getAuthor());
+		authorTxt.setText(book.getAllAuthorName());
 		pagesTxt.setText(String.valueOf(book.getPages()));
 		publisherTxt.setText(book.getPublisher());
 		publicationYearTxt.setText(String.valueOf(book.getPublishYear()));
@@ -300,10 +368,12 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 			exitFrame();
 			
 		} else if(e.getSource().equals(addBtn)) {
-			String[] result = library.checkNewBook(nameTxt.getText(), authorTxt.getText(), 
+			String[] result = checkNewBook(nameTxt.getText(), authorTxt.getText().split(","), 
 					publicationYearTxt.getText(), pagesTxt.getText(),
 					isbnTxt.getText(), publisherTxt.getText(), synopsisArea.getText(), 
 					quantityTxt.getText());
+			
+//			System.out.println(result[1].toString());
 			
 			if(result[8].equals("")) {
 				if(addBtn.getText().equals("Add")) {
@@ -311,9 +381,8 @@ public class AddUpdateBookFormAdminFrame extends JDialog implements ActionListen
 							Integer.parseInt(result[2]), Integer.parseInt(result[3]), 
 							result[4], result[5], result[6], 
 							Integer.parseInt(result[7]));
-					
 				} else if(addBtn.getText().equals("Update")) {
-					adminBookFrame.updateData(result[0], result[1], 
+					adminBookFrame.updateData(result[0], result[1].split(","), 
 							Integer.parseInt(result[2]), Integer.parseInt(result[3]), 
 							result[4], result[5], result[6], 
 							Integer.parseInt(result[7]));

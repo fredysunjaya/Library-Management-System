@@ -49,7 +49,7 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 	
 	// Center
 	private JTable memberTable = new JTable();
-	private Object[] memberColumn = {"ID", "Name", "Birthdate", "Email Address", "Phone Number", "Join Date"};
+	private Object[] memberColumn = {"ID", "Name", "Birthdate", "Email Address", "Phone Number", "Join Date", "Position"};
 	private JScrollPane memberScrollPane = new JScrollPane(memberTable);
 	private DefaultTableModel dtmMember;
 	private DefaultTableModel dtmSearchMember;
@@ -77,23 +77,45 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 				return false;
 			}
 		};
+		int i = 0;
 		
 		for(Member member : members) {
-			Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum(), member.getJoinDate()};
+			Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum(), member.getJoinDate(), i};
 			
 			dtmMember.addRow(memberFile);
+			i++;
 		}
 		memberTable.setModel(dtmMember);
 		
 		memberTable.getColumnModel().getColumn(5).setMinWidth(0);
 		memberTable.getColumnModel().getColumn(5).setMaxWidth(0);
+		memberTable.getColumnModel().getColumn(6).setMinWidth(0);
+		memberTable.getColumnModel().getColumn(6).setMaxWidth(0);
 	} 
 	
 	public void addData(String id, String name, LocalDate birthDate, String email, String phoneNum, String password, LocalDate joinDate) {
-		Object[] row = {id, name, birthDate, email, phoneNum, password};	
-		library.addMember(id, name, birthDate, email, phoneNum, password, joinDate);
+		Object[] row = {id, name, birthDate, email, phoneNum, joinDate, library.getMembers().size()};	
+		library.addMember(id, name, birthDate, email, phoneNum, password, joinDate, new ArrayList<IssuedBook>());
 		dtmMember.addRow(row);
+		memberTable.setModel(dtmMember);
 		memberTable.invalidate();
+	}
+	
+	public DefaultTableModel filterMembers(String value) {
+		int i = 0;
+		
+		for(Member member : library.getMembers()) {
+			if(member.getName().toLowerCase().contains(value.toLowerCase()) || 
+					member.getId().toLowerCase().contains(value.toLowerCase()) ||
+					member.getEmail().toLowerCase().contains(value.toLowerCase())) {
+				
+				Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum(), member.getJoinDate(), dtmMember.getValueAt(i, 6)};
+				dtmSearchMember.addRow(memberFile);
+			}
+			i++;
+		}
+		
+		return dtmSearchMember;
 	}
 	
 	public void initComponent(ArrayList<Member> members) {
@@ -268,7 +290,7 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				
 				if(answer == JOptionPane.YES_OPTION) {
-					Member member = library.searchMember(memberTable.getValueAt(selectedRow, 0).toString());
+					Member member = library.getMembers().get((int) memberTable.getModel().getValueAt(selectedRow, 6));
 					
 					library.removeMember(member);
 					loadTable(library.getMembers());
@@ -284,7 +306,7 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 			if(selectedRow != -1) {
 				setEnabled(false);
 				ViewMemberAdminFrame viewMember = new ViewMemberAdminFrame(this, getWidth(), getHeight(), 
-						library.searchMember(memberTable.getValueAt(selectedRow, 0).toString()));
+						library.getMembers().get((int) memberTable.getModel().getValueAt(selectedRow, 6)));
 				
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
@@ -292,7 +314,7 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 		} else if(e.getSource().equals(searchBtn)) {
 			String searchValue = searchTxt.getText();
 			
-			if(!searchValue.equals("")) {
+			if(!searchValue.trim().equals("")) {
 				dtmSearchMember = new DefaultTableModel(memberColumn, 0) {
 					@Override
 					public boolean isCellEditable(int row, int column) {
@@ -300,19 +322,22 @@ public class AdminMemberFrame extends JFrame implements ActionListener {
 						return false;
 					}
 				};
-				ArrayList<Member> searchedMembers = library.filterMembers(searchValue);
-				
-				for(Member member : searchedMembers) {
-					Object[] memberFile = {member.getId(), member.getName(), member.getBirthDate(), member.getEmail(), member.getPhoneNum()};
-					dtmSearchMember.addRow(memberFile);
-				}
+				dtmSearchMember = filterMembers(searchValue);
 				
 				memberTable.setModel(dtmSearchMember);
+				memberTable.getColumnModel().getColumn(5).setMinWidth(0);
+				memberTable.getColumnModel().getColumn(5).setMaxWidth(0);
+				memberTable.getColumnModel().getColumn(6).setMinWidth(0);
+				memberTable.getColumnModel().getColumn(6).setMaxWidth(0);
 				memberTable.invalidate();
 			}
 		} else if(e.getSource().equals(resetBtn)) {
 			if(!searchTxt.getText().equals("")) {
 				memberTable.setModel(dtmMember);
+				memberTable.getColumnModel().getColumn(5).setMinWidth(0);
+				memberTable.getColumnModel().getColumn(5).setMaxWidth(0);
+				memberTable.getColumnModel().getColumn(6).setMinWidth(0);
+				memberTable.getColumnModel().getColumn(6).setMaxWidth(0);
 				memberTable.invalidate();				
 				searchTxt.setText("");
 			}

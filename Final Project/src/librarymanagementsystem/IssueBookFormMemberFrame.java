@@ -41,6 +41,50 @@ public class IssueBookFormMemberFrame extends JDialog implements ActionListener,
 	private JButton issueBtn = new JButton("Issue");
 	private JButton cancelBtn = new JButton("Cancel");
 	
+	public String[] checkIssuedBook(String isbn, String name, LocalDate issueDate, LocalDate returnDate) {
+		LocalDate today = LocalDate.now();
+		String error = "";
+		String[] result = new String[5];
+		
+		if(isbn.equals("")) {
+			error = error.concat("ISBN can't be empty");
+		} else {
+			result[0] = isbn;
+		}
+		
+		if(name.equals("")) {
+			error = error.concat("\nBook title can't be empty");
+		} else {
+			result[1] = name;
+		}
+		
+		if(issueDate != null && returnDate != null) {
+			if(returnDate.compareTo(issueDate) < 0) {
+				error = error.concat("\nReturn date can't be set before the issue date");
+			} else if(issueDate.compareTo(today) < 0 || returnDate.compareTo(today) < 0) {
+				error = error.concat("\nIssue Date or Return Date can't be set before today");			
+			} else if(issueDate.compareTo(returnDate) == 0) {
+				error = error.concat("\nIssue Date and Return Date can't be on the same day");
+			} 
+		} else {
+			if(issueDate == null) {
+				error = error.concat("\nIssue Date can't be empty");
+			} else {
+				result[2] = issueDate.toString();			
+			}
+			
+			if(returnDate == null) {
+				error = error.concat("\nreturn Date can't be empty");
+			} else {
+				result[3] = returnDate.toString();			
+			}
+		}	
+		
+		result[4] = error;
+		
+		return result;
+	}
+	
 	public void initComponent() {
 		addWindowListener(this);
 		
@@ -203,12 +247,12 @@ public class IssueBookFormMemberFrame extends JDialog implements ActionListener,
 				returnDate = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();				
 			}
 			
-			String result[] = library.checkIssuedBook(isbnTxt.getText(), bookNameTxt.getText(), issueDate, returnDate);
+			String result[] = checkIssuedBook(isbnTxt.getText(), bookNameTxt.getText(), issueDate, returnDate);
 			
 			if(result[4].equals("")) {	
 				Book book = library.searchBook(isbnTxt.getText());
 				
-				memberBookFrame.addData(book, issueDate, returnDate, "Issued", 0.0);
+				memberBookFrame.addData(book, issueDate, returnDate);
 				JOptionPane.showMessageDialog(this, "Book Borrowed Successfully!\nDon't forget to take your book at the library as soon as possible", "Borrowing Complete", JOptionPane.INFORMATION_MESSAGE);
 				resetForm();
 				exitFrame();

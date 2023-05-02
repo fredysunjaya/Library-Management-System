@@ -9,12 +9,11 @@ public class IssuedBook {
 	//	Returned
 	
 	private String id;
-	private Member member;
 	private Book book;
 	private LocalDate issueDate;
 	private LocalDate returnDate;
 	private String status;
-	private double fine;
+	private Fine fine;
 	
 	public String getId() {
 		return id;
@@ -22,14 +21,6 @@ public class IssuedBook {
 	
 	public void setId(String id) {
 		this.id = id;
-	}
-	
-	public Member getMember() {
-		return member;
-	}
-	
-	public void setMember(Member member) {
-		this.member = member;
 	}
 	
 	public Book getBook() {
@@ -64,17 +55,16 @@ public class IssuedBook {
 		this.status = status;
 	}
 	
-	public double getFine() {
+	public Fine getFine() {
 		return fine;
 	}
 	
-	public void setFine(double fine) {
+	public void setFine(Fine fine) {
 		this.fine = fine;
 	}
 
-	public IssuedBook(String id, Member member, Book book, LocalDate issueDate, LocalDate returnDate, String status,double fine) {
+	public IssuedBook(String id, Book book, LocalDate issueDate, LocalDate returnDate, String status,Fine fine) {
 		this.id = id;
-		this.member = member;
 		this.book = book;
 		this.issueDate = issueDate;
 		this.returnDate = returnDate;
@@ -86,4 +76,14 @@ public class IssuedBook {
 		
 	}
 	
+	public String getFineStatus() {
+		if((fine.getStatus().equalsIgnoreCase("None") && fine.getTotal() == 0.0) || fine.getStatus().equalsIgnoreCase("Paid")) {
+			return fine.getStatus();
+		} 
+		
+		if(fine.getStatus().equalsIgnoreCase("Not Paid")) {
+			return fine.getStatus() + "($" + String.valueOf(fine.getTotal()) + ")";			
+		}
+		return "$" + String.valueOf(fine.getTotal());
+	}
 }

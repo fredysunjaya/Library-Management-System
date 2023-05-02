@@ -38,7 +38,7 @@ public class MemberBookFrame extends JFrame implements ActionListener {
 	private JButton accountBtn = new JButton("Accounts", new ImageIcon("resources/accountIcon.png"));
 	
 	// Center
-	private Object[] bookColumn = {"ISBN", "Title", "Author", "Pages", "Publisher", "Publication Year", "Synopsis", "Quantity"};
+	private Object[] bookColumn = {"ISBN", "Title", "Author", "Pages", "Publisher", "Publication Year", "Synopsis", "Quantity", "Position"};
 	private JTable bookTable = new JTable();
 	private JScrollPane bookScrollPane = new JScrollPane(bookTable);
 	private DefaultTableModel dtmBook;
@@ -65,20 +65,41 @@ public class MemberBookFrame extends JFrame implements ActionListener {
 				return false;
 			}
 		};
+		int i = 0;
 		
 		for(Book book : books) {
-			Object[] bookFile = {book.getIsbn(), book.getName(), book.getAuthor(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity()};
+			Object[] bookFile = {book.getIsbn(), book.getName(), book.getAllAuthorName(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity(), i};
 			
 			dtmBook.addRow(bookFile);
+			i++;
 		}
 		bookTable.setModel(dtmBook);
 		bookTable.getColumnModel().getColumn(6).setMinWidth(0);
 		bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
 	} 
 	
-	public void addData(Book book, LocalDate issueDate, LocalDate returnDate, String status,double fine) {
-		Object[] row = {this.member, book, issueDate, returnDate, status, fine};	
-		library.addIssuedBook(member, book, issueDate, returnDate, status, fine);
+	public void addData(Book book, LocalDate issueDate, LocalDate returnDate) {
+		member.addIssuedBook(book, issueDate, returnDate);
+	}
+	
+	public DefaultTableModel filterBooks(String value) {
+		int i = 0;
+		
+		for(Book book : library.getBooks()) {
+			if(book.getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+					book.getName().toLowerCase().contains(value.toLowerCase()) || 
+					book.getAllAuthorName().toLowerCase().contains(value.toLowerCase()) ||
+					book.getPublisher().toLowerCase().contains(value.toLowerCase())) {
+				
+				Object[] bookFile = {book.getIsbn(), book.getName(), book.getAllAuthorName(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity(), dtmBook.getValueAt(i, 8)};
+				dtmSearchBook.addRow(bookFile);
+			}
+			i++;
+		}
+		
+		return dtmSearchBook;
 	}
 	
 	public void initComponent(ArrayList<Book> books) {
@@ -241,22 +262,25 @@ public class MemberBookFrame extends JFrame implements ActionListener {
 						return false;
 					}
 				};
-				ArrayList<Book> searchedBooks = library.filterBooks(searchValue);
 				
-				for(Book book : searchedBooks) {
-					Object[] bookFile = {book.getIsbn(), book.getName(), book.getAuthor(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity()};
-					dtmSearchBook.addRow(bookFile);
-				}
+				dtmSearchBook = filterBooks(searchValue);
 				
 				bookTable.setModel(dtmSearchBook);
+				bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+				bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+				bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+				bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
 				bookTable.invalidate();				
 			}
 		} else if(e.getSource().equals(resetBtn)) {
-			if(!searchTxt.getText().equals("")) {
-				bookTable.setModel(dtmBook);
-				bookTable.invalidate();				
-				searchTxt.setText("");
-			}
+			bookTable.setModel(dtmBook);
+			bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+			bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+			bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+			bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
+			bookTable.invalidate();				
+			searchTxt.setText("");
+			
 		} else if(e.getSource().equals(issueBtn)) {
 			int selectedRow = bookTable.getSelectedRow();
 			Book book = null;
@@ -274,7 +298,7 @@ public class MemberBookFrame extends JFrame implements ActionListener {
 			if(selectedRow != -1) {
 				setEnabled(false);
 				ViewBookFrame viewBookForm = new ViewBookFrame(this, getWidth(), getHeight(), 
-						library.searchBook(bookTable.getValueAt(selectedRow, 0).toString()));
+						library.getBooks().get((int) bookTable.getModel().getValueAt(selectedRow, 8)));
 				
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);

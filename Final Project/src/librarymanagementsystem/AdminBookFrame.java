@@ -40,7 +40,7 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 	private JButton logoutBtn = new JButton("Log Out", new ImageIcon("resources/logoutIcon.png"));
 	
 	// Center
-	private Object[] bookColumn = {"ISBN", "Title", "Author", "Pages", "Publisher", "Publication Year", "Synopsis", "Quantity"};
+	private Object[] bookColumn = {"ISBN", "Title", "Author", "Pages", "Publisher", "Publication Year", "Synopsis", "Quantity", "Position"};
 	private JTable bookTable = new JTable();
 	private JScrollPane bookScrollPane = new JScrollPane(bookTable);
 	private DefaultTableModel dtmBook;
@@ -57,6 +57,7 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 	private JButton updateBtn = new JButton("Update");
 	private JButton deleteBtn = new JButton("Delete");
 	private JButton viewBtn = new JButton("View");
+	private JButton viewAuthorBtn = new JButton("View Author");
 	
 	public void loadTable(ArrayList<Book> books) {
 		bookTable.getTableHeader().setReorderingAllowed(false);
@@ -70,33 +71,71 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 				return false;
 			}
 		};
+		int i = 0;
 		
 		for(Book book : books) {
-			Object[] bookFile = {book.getIsbn(), book.getName(), book.getAuthor(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity()};
-			
+			Object[] bookFile = {book.getIsbn(), book.getName(), book.getAllAuthorName(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity(), i};
+
 			dtmBook.addRow(bookFile);
+			i++;
 		}
 		bookTable.setModel(dtmBook);
 		
 		bookTable.getColumnModel().getColumn(6).setMinWidth(0);
 		bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
 	} 
 	
-	public void addData(String name, String author, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
-		Object[] row = {isbn, name, author, pages, publisher, publishYear, synopsis, quantity};
-		library.addBook(name, author, publishYear, pages, isbn, publisher, synopsis, quantity);
+	public void addData(String name, String authors, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
+		ArrayList<Author> authorsTemp = new ArrayList<>();
+		String[] authorName = authors.split(",");
+		
+		for(int i = 0; i < authorName.length; i++) {
+			authorsTemp.add(library.searchAuthor(authorName[i].trim()));
+		}
+		
+		Book book = new Book(name, authorsTemp, publishYear, pages, isbn, publisher, synopsis, quantity);
+		
+		Object[] row = {isbn, name, authors, pages, publisher, publishYear, synopsis, quantity, library.getBooks().size() + 1};
+		library.addBook(book);
 		dtmBook.addRow(row);
+		bookTable.setModel(dtmBook);
 		bookTable.invalidate();				
 	}
 	
-	public void updateData(String name, String author, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
-		int selectedRow = library.searchBookPos(isbn);
+	public void updateData(String name, String[] authors, int publishYear, int pages, String isbn, String publisher, String synopsis, int quantity) {
+		int selectedRow = bookTable.getSelectedRow();
+		int bookPos = (int) bookTable.getModel().getValueAt(selectedRow, 8);
 		
-		library.updateBook(selectedRow, name, author, publishYear, pages, isbn, publisher, synopsis, quantity);
+		ArrayList<Author> authorsTemp = new ArrayList<>();
 		
+		for(int i = 0; i < authors.length; i++) {
+			authorsTemp.add(library.searchAuthor(authors[i].trim()));
+		}
+		
+		library.updateBook(bookPos, name, authorsTemp, publishYear, pages, isbn, publisher, synopsis, quantity);	
 		loadTable(library.getBooks());
 		bookTable.setModel(dtmBook);
 		bookTable.invalidate();
+	}
+	
+	public DefaultTableModel filterBooks(String value) {
+		int i = 0;
+		
+		for(Book book : library.getBooks()) {
+			if(book.getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+					book.getName().toLowerCase().contains(value.toLowerCase()) || 
+					book.getAllAuthorName().toLowerCase().contains(value.toLowerCase()) ||
+					book.getPublisher().toLowerCase().contains(value.toLowerCase())) {
+				
+				Object[] bookFile = {book.getIsbn(), book.getName(), book.getAllAuthorName(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity(), dtmBook.getValueAt(i, 8)};
+				dtmSearchBook.addRow(bookFile);
+			}
+			i++;
+		}
+		
+		return dtmSearchBook;
 	}
 	
 	public void initComponent(ArrayList<Book> books) {
@@ -206,6 +245,10 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 		viewBtn.addActionListener(this);
 		rightSouthPanel.add(viewBtn, formRightConst);
 		
+		formRightConst.gridx++;
+		viewAuthorBtn.addActionListener(this);
+		rightSouthPanel.add(viewAuthorBtn, formRightConst);
+		
 		formConst.weightx = 0.5;
 		southPanel.add(leftSouthPanel, formConst);
 		formConst.weightx = 0.25;
@@ -271,7 +314,7 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 			
 			if(selectedRow != -1) {
 				AddUpdateBookFormAdminFrame updateBookForm = new AddUpdateBookFormAdminFrame(library, this, getWidth(), getHeight(), 
-						library.searchBook(bookTable.getValueAt(selectedRow, 0).toString()));
+						library.getBooks().get((int) bookTable.getModel().getValueAt(selectedRow, 8)));
 				
 				setEnabled(false);
 			} else {
@@ -285,7 +328,7 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				
 				if(answer == JOptionPane.YES_OPTION) {
-					Book book = library.searchBook(bookTable.getValueAt(selectedRow, 0).toString());
+					Book book = library.getBooks().get((int) bookTable.getModel().getValueAt(selectedRow, 8));
 					
 					library.removeBook(book);
 					loadTable(library.getBooks());
@@ -301,15 +344,32 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 			if(selectedRow != -1) {
 				setEnabled(false);
 				ViewBookFrame viewBookForm = new ViewBookFrame(this, getWidth(), getHeight(), 
-						library.searchBook(bookTable.getValueAt(selectedRow, 0).toString()));
+						library.getBooks().get((int) bookTable.getModel().getValueAt(selectedRow, 8)));
+				
+//				System.out.println(bookTable.getModel().getValueAt(selectedRow, 8));
 				
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
 			}
-		} else if(e.getSource().equals(searchBtn)) {
+		} else if(e.getSource().equals(viewAuthorBtn)) {
+			int selectedRow = bookTable.getSelectedRow();
+			
+			if(selectedRow != -1) {
+				setEnabled(false);
+				ViewAuthorFrame viewAuthorForm = new ViewAuthorFrame(
+						library.getBooks().get((int) bookTable.getModel().getValueAt(selectedRow, 8)).getAuthors(),
+						this, getWidth(), getHeight(), 
+						library.getBooks());
+				
+//				System.out.println(bookTable.getModel().getValueAt(selectedRow, 8));
+				
+			} else {
+				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}else if(e.getSource().equals(searchBtn)) {
 			String searchValue = searchTxt.getText();
 			
-			if(!searchValue.equals("")) {
+			if(!searchValue.trim().equals("")) {
 				dtmSearchBook = new DefaultTableModel(bookColumn, 0) {
 					@Override
 					public boolean isCellEditable(int row, int column) {
@@ -317,22 +377,24 @@ public class AdminBookFrame extends JFrame implements ActionListener {
 						return false;
 					}
 				};
-				ArrayList<Book> searchedBooks = library.filterBooks(searchValue);
 				
-				for(Book book : searchedBooks) {
-					Object[] bookFile = {book.getIsbn(), book.getName(), book.getAuthor(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity()};
-					dtmSearchBook.addRow(bookFile);
-				}
+				dtmSearchBook = filterBooks(searchValue);
 				
 				bookTable.setModel(dtmSearchBook);
+				bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+				bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+				bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+				bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
 				bookTable.invalidate();				
 			}
 		} else if(e.getSource().equals(resetBtn)) {
-			if(!searchTxt.getText().equals("")) {
-				bookTable.setModel(dtmBook);
-				bookTable.invalidate();				
-				searchTxt.setText("");
-			}
+			bookTable.setModel(dtmBook);
+			bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+			bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+			bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+			bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
+			bookTable.invalidate();				
+			searchTxt.setText("");
 		}
 	}
 }

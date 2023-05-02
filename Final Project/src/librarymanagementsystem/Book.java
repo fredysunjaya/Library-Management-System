@@ -1,10 +1,11 @@
 package librarymanagementsystem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Book {
 	private String name;
-	private String author;
+	private ArrayList<Author> authors;
 	private int publishYear;
 	private int pages;
 	private String isbn;
@@ -16,10 +17,10 @@ public class Book {
 		
 	}
 
-	public Book(String name, String author, int publishYear, int pages, String isbn, String publisher,
+	public Book(String name, ArrayList<Author> authors, int publishYear, int pages, String isbn, String publisher,
 			String synopsis, int quantity) {
 		this.name = name;
-		this.author = author;
+		this.authors = authors;
 		this.publishYear = publishYear;
 		this.pages = pages;
 		this.isbn = isbn;
@@ -36,12 +37,12 @@ public class Book {
 		this.name = name;
 	}
 	
-	public String getAuthor() {
-		return author;
+	public ArrayList<Author> getAuthors() {
+		return authors;
 	}
 	
-	public void setAuthor(String author) {
-		this.author = author;
+	public void setAuthors(ArrayList<Author> authors) {
+		this.authors = authors;
 	}
 	
 	public int getPublishYear() {
@@ -92,5 +93,16 @@ public class Book {
 		this.quantity = quantity;
 	}
 	
+	public String getAllAuthorName() {
+		String[] authorsName = new String[authors.size()];
+		int i = 0;
+		
+		for(Author author : authors) {
+			authorsName[i] = author.getName();
+			i++;
+		}
+		
+		return String.join(", ", authorsName);
+	}
 	
 }

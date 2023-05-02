@@ -1,0 +1,285 @@
+package librarymanagementsystem;
+
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
+
+public class ViewAuthorFrame extends JDialog implements ActionListener, WindowListener {
+	private JFrame frame;
+	
+	// JDialog Form
+	private JPanel containerForm = new JPanel();
+	private JLabel imageLbl = new JLabel();
+	private JLabel nameLbl = new JLabel("Name");
+	private JLabel nameValLbl = new JLabel();
+	private JLabel descLbl = new JLabel("Description");
+	private JTextArea descArea = new JTextArea();
+	private JScrollPane descPane = new JScrollPane(descArea);
+	private JButton okBtn = new JButton("OK");
+	
+	private Object[] bookColumn = {"ISBN", "Title", "Author", "Pages", "Publisher", "Publication Year", "Synopsis", "Quantity", "Position"};
+	private JTable bookTable = new JTable();
+	private JScrollPane bookScrollPane = new JScrollPane(bookTable);
+	private DefaultTableModel dtmBook;
+
+	public void loadTableByAuthor(ArrayList<Author> authors, ArrayList<Book> books) {
+		bookTable.getTableHeader().setReorderingAllowed(false);
+		bookTable.getTableHeader().setResizingAllowed(false);
+		bookTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		
+		dtmBook = new DefaultTableModel(bookColumn, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
+		int i = 0;
+		
+		for(Author author : authors) {
+			for(Book book : books) {
+				if(book.getAllAuthorName().contains(author.getName())) {
+					Object[] bookFile = {book.getIsbn(), book.getName(), book.getAllAuthorName(), book.getPages(), book.getPublisher(), book.getPublishYear(), book.getSynopsis(), book.getQuantity(), i};
+					
+					dtmBook.addRow(bookFile);
+					i++;				
+				}
+			}			
+		}
+		bookTable.setModel(dtmBook);
+		
+		bookTable.getColumnModel().getColumn(6).setMinWidth(0);
+		bookTable.getColumnModel().getColumn(6).setMaxWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMinWidth(0);
+		bookTable.getColumnModel().getColumn(8).setMaxWidth(0);
+	}
+	
+	public void setTextValue(ArrayList<Author> authors) {
+		String[] authorsName = new String[authors.size()];
+		String[] authorsDesc = new String[authors.size()];
+		int i = 0;
+		
+		for(Author author : authors) {
+			authorsName[i] = author.getName();
+			authorsDesc[i] = author.getDescription();
+			i++;
+		}
+		
+		nameValLbl.setText(String.join(", ", authorsName));
+		descArea.setText(String.join(", ", authorsDesc));
+	}
+	
+	public void initComponent() {	
+		addWindowListener(this);	
+		
+		// JDialog Form
+		GridBagLayout containerLayout = new GridBagLayout();
+		GridBagConstraints containerConst = new GridBagConstraints();
+		containerForm.setLayout(containerLayout);
+		
+		// Member Image
+		containerConst.gridx = 0;	
+		containerConst.gridy = 0;
+		containerConst.fill = GridBagConstraints.VERTICAL;
+//		containerConst.anchor = GridBagConstraints.CENTER;
+		containerConst.gridwidth = 2;
+		containerConst.weightx= 1;
+		containerConst.weighty= 1;
+		containerForm.add(imageLbl, containerConst);
+		
+		// Name Label
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 1;
+		containerConst.weightx = 0.25;
+		containerConst.weighty = 0;
+		containerConst.fill = GridBagConstraints.HORIZONTAL; 
+		containerConst.insets = new Insets(5, 5, 5, 5);
+		containerForm.add(nameLbl, containerConst);
+		
+		// Name Value Label
+		containerConst.gridx++;
+		containerConst.weightx = 0.75;
+		containerForm.add(nameValLbl, containerConst);
+
+		// Desc Label
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.25;
+		containerForm.add(descLbl, containerConst);
+		
+		// Desc Value Label
+		containerConst.gridx++;
+		containerConst.weightx = 0.75;
+		descArea.setRows(5);
+		descArea.setColumns(20);
+		descArea.setEditable(false);
+		// line wrapping
+		descArea.setLineWrap(true);
+		// word wrapping
+		descArea.setWrapStyleWord(true);
+//		synopsisArea.setEnabled(false);
+		containerForm.add(descPane, containerConst);	
+		
+		// Ok Button
+//		containerConst.gridx = 0;
+//		containerConst.gridy++;
+//		containerConst.gridwidth = 2;
+//		containerConst.fill = GridBagConstraints.NONE;
+//		containerForm.add(bookScrollPane);
+
+//		containerConst.gridx = 0;
+//		containerConst.gridy++;		
+//		containerConst.ipadx = 15;
+//		containerConst.insets = new Insets(20, 0, 0, 0);
+//		okBtn.addActionListener(this);
+//		containerForm.add(okBtn, containerConst);		
+		
+		setLayout(new GridBagLayout());
+		GridBagConstraints formConst = new GridBagConstraints();
+		formConst.insets = new Insets(0, 50, 10, 50);
+		formConst.weightx = 1.0;
+		formConst.fill = GridBagConstraints.HORIZONTAL;
+		formConst.gridx = 0;
+		formConst.gridy = 0;
+		add(containerForm, formConst);
+		
+		formConst.gridx = 0;
+		formConst.gridy++;
+		formConst.weighty = 1.0;
+		formConst.fill = GridBagConstraints.BOTH;
+		formConst.insets = new Insets(10, 25, 0, 25);
+		add(bookScrollPane, formConst);
+		
+		formConst.gridx = 0;
+		formConst.gridy++;
+		formConst.fill = GridBagConstraints.NONE;
+		
+		formConst.gridx = 0;
+		formConst.gridy++;
+		formConst.insets = new Insets(10, 25, 0, 25);
+		okBtn.addActionListener(this);
+		add(okBtn, formConst);
+		
+//		setResizable(false);
+	}
+
+	public ViewAuthorFrame(ArrayList<Author> authors, JFrame frame, int width, int height, ArrayList<Book> books) {
+		super(frame);
+		
+		this.frame = frame;
+		width = (int)(width / 1.125);
+		height = (int)(height / 1.125);
+		setSize(width, height);
+		setLocationRelativeTo(frame);
+		
+		BufferedImage img = null;
+		try {
+		    img = ImageIO.read(new File("resources/userImage.png"));
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		Image imgResize = img.getScaledInstance(height / 4, width / 4, Image.SCALE_SMOOTH);
+		ImageIcon imageIcon = new ImageIcon(imgResize);
+		imageLbl.setIcon(imageIcon);
+		
+		setTitle("View Member");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		loadTableByAuthor(authors, books);
+		initComponent();
+		setVisible(true);
+		
+		imageLbl.setPreferredSize(new Dimension((int)(width * 0.15), (int)(height * 0.3)));
+		
+		setTextValue(authors);
+	}
+	
+	public ViewAuthorFrame() {
+		
+	}
+	
+	public void exitFrame() {
+		frame.setEnabled(true);
+		frame.setAlwaysOnTop(true);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		frame.setAlwaysOnTop(false);
+		dispose();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(okBtn)) {
+			exitFrame();
+		}
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		exitFrame();
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}

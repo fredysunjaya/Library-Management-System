@@ -48,6 +48,54 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 	private JButton addBtn = new JButton("Add");
 	private JButton cancelBtn = new JButton("Cancel");
 	
+	public String[] checkNewMember(String name, String birthDate, String email, String phoneNum, String password) {
+		String error = "";
+		String[] result = new String[6];
+		
+		if(name.equals("")) {
+			error = error.concat("Name can't be empty");
+		} else {
+			result[0] = name;
+		}
+		
+		if(birthDate.equals("")) {
+			error = error.concat("\nBirthdate can't be empty");
+		} else {
+			result[1] = birthDate;
+		}
+		
+		if(phoneNum.equals("") && email.equals("")) {
+			error = error.concat("\nEither email or phone number cannot be empty");
+		} else {
+			if(!email.equals("") && email.contains("@")) {
+				result[2] = email;
+			} else if(!email.contains("@")) {
+				error = error.concat("\nEmail must contain @");
+			} else {
+				result[2] = "-";
+			}
+			if(!phoneNum.equals("")) {
+				result[3] = phoneNum;
+			} else {
+				result[3] = "-";
+			}
+		}
+		
+		String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+		
+		if(password.equals("")) {
+			error = error.concat("\nPasswords can't be empty");
+		} else if(!password.matches(regex)) {
+			error = error.concat("\nPassword is at least 8 characters long\n Password must contains at least 1 lowercase, upercase, and special character");
+		} else {
+			result[4] = password;
+		}
+		
+		result[5] = error;
+		
+		return result;
+	}
+	
 	public void initComponent() {
 		addWindowListener(this);
 		
@@ -239,7 +287,7 @@ public class AddMemberFormAdminFrame extends JDialog implements ActionListener, 
 				temp = birthDateChooser.getDate().toString();
 			}
 			
-			String result[] = library.checkNewMember(nameTxt.getText(), temp, emailTxt.getText(), phoneTxt.getText(), String.valueOf(passwordTxt.getPassword()));
+			String result[] = checkNewMember(nameTxt.getText(), temp, emailTxt.getText(), phoneTxt.getText(), String.valueOf(passwordTxt.getPassword()));
 			
 			if(result[5].equals("")) {
 				Date date1 = birthDateChooser.getDate();

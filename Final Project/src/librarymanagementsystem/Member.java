@@ -1,6 +1,7 @@
 package librarymanagementsystem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Member {
 	private String id;
@@ -10,12 +11,13 @@ public class Member {
 	private String phoneNum;
 	private String password;
 	private LocalDate joinDate;
+	private ArrayList<IssuedBook> issuedBooks;
 	
 	public Member() {
 		
 	}
 
-	public Member(String id, String name, LocalDate birthDate, String email, String phoneNum, String password, LocalDate joinDate) {
+	public Member(String id, String name, LocalDate birthDate, String email, String phoneNum, String password, LocalDate joinDate, ArrayList<IssuedBook> issuedBooks) {
 		this.id = id;
 		this.name = name;
 		this.birthDate = birthDate;
@@ -23,6 +25,7 @@ public class Member {
 		this.phoneNum = phoneNum;
 		this.password = password;
 		this.joinDate = joinDate;
+		this.issuedBooks = issuedBooks;
 	}
 	
 	public String getId() {
@@ -80,6 +83,38 @@ public class Member {
 	public void setJoinDate(LocalDate joinDate) {
 		this.joinDate = joinDate;
 	}
+
+	public ArrayList<IssuedBook> getIssuedBooks() {
+		return issuedBooks;
+	}
+
+	public void setIssuedBooks(ArrayList<IssuedBook> issuedBooks) {
+		this.issuedBooks = issuedBooks;
+	}
 	
+	public void changeIssuedBook(int pos) {
+		LocalDate today = LocalDate.now();
+		
+		if(issuedBooks.get(pos).getReturnDate().compareTo(today) != 0) {
+			issuedBooks.get(pos).setReturnDate(today);
+		}
+		issuedBooks.get(pos).setStatus("Returned");
+		
+		if(issuedBooks.get(pos).getFine().getTotal() != 0) {
+			issuedBooks.get(pos).getFine().setStatus("Not Paid");
+		}
+	}
+	
+	public void changePaid(int pos) {
+		issuedBooks.get(pos).getFine().setStatus("Paid");
+	}
+	
+	public void addIssuedBook(Book book, LocalDate issueDate, LocalDate returnDate) {
+		String id = Library.generateIdRecord(this.id, book.getIsbn(), issueDate, returnDate);
+		
+		issuedBooks.add(new IssuedBook(id, book, issueDate, returnDate, "Issued", new Fine(Library.generateFineId(id), 0.0, "None")));
+	//	System.out.println(id);
+	//	System.out.println(member.getName());
+	}
 	
 }

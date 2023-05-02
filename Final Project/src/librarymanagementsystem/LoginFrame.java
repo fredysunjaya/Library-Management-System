@@ -56,7 +56,8 @@ public class LoginFrame extends JFrame implements ActionListener {
 		};
 		
 		for(Book book : books) {
-			Object[] bookFile = {book.getName(), book.getAuthor(), book.getPublisher()};
+			
+			Object[] bookFile = {book.getName(), book.getAllAuthorName(), book.getPublisher()};
 			
 			dtmBook.addRow(bookFile);
 		}

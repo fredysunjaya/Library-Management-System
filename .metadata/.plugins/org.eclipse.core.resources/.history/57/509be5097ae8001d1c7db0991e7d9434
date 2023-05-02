@@ -1,0 +1,263 @@
+package librarymanagementsystem;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import com.toedter.calendar.JDateChooser;
+
+public class IssueBookFormMemberFrame extends JDialog implements ActionListener, WindowListener {
+	private Library library;
+	private MemberBookFrame memberBookFrame;
+	
+	// Add Form
+	private JPanel containerPanel = new JPanel();
+	private JLabel titleLbl = new JLabel("ISSUE BOOK");
+	private JLabel isbnLbl = new JLabel("ISBN");
+	private JTextField isbnTxt = new JTextField();
+	private JLabel bookNameLbl = new JLabel("Name");
+	private JTextField bookNameTxt = new JTextField();
+	private JLabel issueDateLbl = new JLabel("Issue Date");
+	private JDateChooser issueDateChooser = new JDateChooser();
+	private JLabel returnDateLbl = new JLabel("Return Date");
+	private JDateChooser returnDateChooser = new JDateChooser();
+	private JButton issueBtn = new JButton("Issue");
+	private JButton cancelBtn = new JButton("Cancel");
+	
+	public void initComponent() {
+		addWindowListener(this);
+		
+		// Container Form
+		GridBagLayout containerLayout = new GridBagLayout();
+		GridBagConstraints containerConst = new GridBagConstraints();
+		containerPanel.setLayout(containerLayout);
+		containerPanel.setBackground(Color.GRAY);
+		
+		// Title Label
+		containerConst.gridx = 0;	
+		containerConst.gridy = 0;
+		containerConst.gridwidth = 2;
+		containerConst.weightx= 1; 
+		titleLbl.setFont(new Font("Tahoma", Font.BOLD, 32));
+		containerConst.insets = new Insets(0, 0, 30, 0);
+		containerPanel.add(titleLbl, containerConst);
+		
+		// ISBN Label
+		containerConst.fill = GridBagConstraints.HORIZONTAL;
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 1;
+		containerConst.weightx = 0.2;
+		containerConst.ipady = 10;
+		containerConst.insets = new Insets(5, 0, 5, 0);
+		containerPanel.add(isbnLbl, containerConst);
+		
+		// ISBN text field
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(isbnTxt, containerConst);
+		
+		// Name Label
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(bookNameLbl, containerConst);
+		
+		// Name text field
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(bookNameTxt, containerConst);	
+		
+		// Issue Date Label
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(issueDateLbl, containerConst);
+		
+		// Issue Date Chooser
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(issueDateChooser, containerConst);
+
+		// Return Date Label
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.weightx = 0.2;
+		containerPanel.add(returnDateLbl, containerConst);
+		
+		// Return Date Chooser
+		containerConst.gridx++;
+		containerConst.weightx = 0.8;
+		containerPanel.add(returnDateChooser, containerConst);
+		
+		JPanel buttonForm = new JPanel();
+		buttonForm.setLayout(new GridBagLayout());
+		GridBagConstraints buttonConst = new GridBagConstraints();
+		
+		// Add Button
+		buttonConst.gridx = 0;
+		buttonConst.gridy++;
+		buttonConst.weightx = 0.5;
+		buttonConst.insets = new Insets(30, 0, 0, 0);
+		buttonConst.fill = GridBagConstraints.NONE;
+		issueBtn.addActionListener(this);
+		buttonForm.add(issueBtn, buttonConst);
+		
+		// Cancel Button
+		buttonConst.gridx++;
+		cancelBtn.addActionListener(this);
+		buttonForm.add(cancelBtn, buttonConst);
+		
+		containerConst.gridx = 0;
+		containerConst.gridy++;
+		containerConst.gridwidth = 2;
+		containerPanel.add(buttonForm, containerConst);
+		
+		setLayout(new GridBagLayout());
+		GridBagConstraints formConst = new GridBagConstraints();
+		formConst.insets = new Insets(0, 100, 0, 100);
+		formConst.weightx = 1.0;
+		formConst.fill = GridBagConstraints.HORIZONTAL;
+		add(containerPanel, formConst);
+	}
+	
+	public void exitFrame() {
+		resetForm();
+		memberBookFrame.setEnabled(true);
+		memberBookFrame.setAlwaysOnTop(true);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		memberBookFrame.setAlwaysOnTop(false);
+		dispose();
+	}
+	
+	public void resetForm() {
+		isbnTxt.setText("");
+		bookNameTxt.setText("");
+		issueDateChooser.setDate(null);
+		returnDateChooser.setDate(null);
+	}
+	
+	public IssueBookFormMemberFrame(Library library, MemberBookFrame memberBookFrame, int width, int height, Book book) {
+		
+		super(memberBookFrame);
+		
+		this.library = library;
+		this.memberBookFrame = memberBookFrame; 
+		setSize((int)(width / 1.125), (int)(height / 1.125));
+		setLocationRelativeTo(memberBookFrame);
+		
+		if(book != null) {
+			isbnTxt.setText(book.getIsbn());		
+			bookNameTxt.setText(book.getName());
+		}
+		
+		setTitle("Borrowing Book");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		initComponent();
+		setVisible(true);
+	}
+	
+	public IssueBookFormMemberFrame() {
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource().equals(cancelBtn)) {
+			exitFrame();
+			
+		} else if(e.getSource().equals(issueBtn)) {
+			String temp;
+			
+			Date date1 = issueDateChooser.getDate();
+			LocalDate issueDate = null;
+			if(date1 != null) {
+				issueDate = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			}
+			Date date2 = returnDateChooser.getDate();
+			LocalDate returnDate = null;
+			if(date2 != null) {
+				returnDate = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();				
+			}
+			
+			String result[] = library.checkIssuedBook(isbnTxt.getText(), bookNameTxt.getText(), issueDate, returnDate);
+			
+			if(result[4].equals("")) {	
+				Book book = library.searchBook(isbnTxt.getText());
+				
+				memberBookFrame.addData(book, issueDate, returnDate);
+				JOptionPane.showMessageDialog(this, "Book Borrowed Successfully!\nDon't forget to take your book at the library as soon as possible", "Borrowing Complete", JOptionPane.INFORMATION_MESSAGE);
+				resetForm();
+				exitFrame();
+			} else {
+				JOptionPane.showMessageDialog(this, result[4], "Error", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		exitFrame();
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}

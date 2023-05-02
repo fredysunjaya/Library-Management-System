@@ -221,7 +221,7 @@ public class ViewBookFrame extends JDialog implements ActionListener, WindowList
 		
 		titleLbl.setText(book.getName());
 		isbnValLbl.setText(book.getIsbn());
-		authorValLbl.setText(book.getAuthor());
+		authorValLbl.setText(book.getAllAuthorName());
 		pagesValLbl.setText(String.valueOf(book.getPages()));
 		publisherValLbl.setText(book.getPublisher());
 		publicationYearValLbl.setText(String.valueOf(book.getPublishYear()));
@@ -262,7 +262,7 @@ public class ViewBookFrame extends JDialog implements ActionListener, WindowList
 		
 		titleLbl.setText(book.getName());
 		isbnValLbl.setText(book.getIsbn());
-		authorValLbl.setText(book.getAuthor());
+		authorValLbl.setText(book.getAllAuthorName());
 		pagesValLbl.setText(String.valueOf(book.getPages()));
 		publisherValLbl.setText(book.getPublisher());
 		publicationYearValLbl.setText(String.valueOf(book.getPublishYear()));

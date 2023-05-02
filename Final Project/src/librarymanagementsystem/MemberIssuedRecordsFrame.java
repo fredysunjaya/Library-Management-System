@@ -32,7 +32,6 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 	private Library library;
 	private Member member;
 	private boolean type;
-	private ArrayList<IssuedBook> tempMemberIssuedBooks = new ArrayList<>();
 	
 	// North
 	private JPanel menubar = new JPanel();
@@ -44,7 +43,7 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 	
 	// Center 
 	private JTable issuedTable = new JTable();
-	private Object[] issuedColumn = {"ID", "Name", "ISBN", "Title", "Issue Date", "Return Date", "Status", "Fine"};
+	private Object[] issuedColumn = {"ID", "Name", "ISBN", "Title", "Issue Date", "Return Date", "Status", "Fine", "Position", "Fine Status"};
 	private JScrollPane issuedScrollPane = new JScrollPane(issuedTable);
 	private DefaultTableModel dtmIssued;
 	private DefaultTableModel dtmRecords;
@@ -63,11 +62,10 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 	private JButton searchBtnFromTo = new JButton("Search");
 	private JTextField searchTxt = new JTextField();
 	private JButton searchBtnTxt = new JButton("Search");
-	private JButton returnedBtn = new JButton("Returned");
 	private JButton viewBtn = new JButton("View Details");
 	private JButton resetBtn = new JButton("Reset");
 	
-	public void loadTable(ArrayList<IssuedBook> issuedBooks) {
+	public void loadTable(ArrayList<Member> members) {
 		issuedTable.getTableHeader().setReorderingAllowed(false);
 		issuedTable.getTableHeader().setResizingAllowed(false);
 		issuedTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -80,20 +78,20 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 			}
 		};
 		
-		for(IssuedBook issuedBook : issuedBooks) {
-			if(!issuedBook.getMember().getId().equals(member.getId())) {
-				continue;
-			}
-			
-			Object[] issuedFile = {issuedBook.getId(), issuedBook.getMember().getName(), issuedBook.getBook().getIsbn(),
+		int i = 0;
+		for(IssuedBook issuedBook : member.getIssuedBooks()) {
+			Object[] issuedFile = {issuedBook.getId(), member.getName(), issuedBook.getBook().getIsbn(),
 					issuedBook.getBook().getName(), issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
-					issuedBook.getStatus(), issuedBook.getFine()};
+					issuedBook.getStatus(), issuedBook.getFineStatus(), String.format("%d-%d", Integer.parseInt(member.getId()), i), issuedBook.getFine().getStatus()};
 			
 			dtmRecords.addRow(issuedFile);
-			tempMemberIssuedBooks.add(issuedBook);
+			i++;
 		}
 		
+		
 		if(type) {
+			System.out.println("asd");
+			
 			dtmIssued = new DefaultTableModel(issuedColumn, 0) {
 				@Override
 				public boolean isCellEditable(int row, int column) {
@@ -102,34 +100,100 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 				}
 			};
 			
-			for(IssuedBook issuedBook : tempMemberIssuedBooks) {
-				if(issuedBook.getStatus().equalsIgnoreCase("Returned") || !issuedBook.getMember().getId().equals(member.getId())) {
+			for(int j = 0; j < dtmRecords.getRowCount(); j++) {
+				if(dtmRecords.getValueAt(j, 6).toString().equalsIgnoreCase("Returned")) {
 					continue;
 				}
-				Object[] issuedFile = {issuedBook.getId(), issuedBook.getMember().getName(), issuedBook.getBook().getIsbn(),
-						issuedBook.getBook().getName(), issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
-						issuedBook.getStatus(), issuedBook.getFine()};
+					
+				Object[] issuedFile = {
+					dtmRecords.getValueAt(j, 0),
+					dtmRecords.getValueAt(j, 1),
+					dtmRecords.getValueAt(j, 2),
+					dtmRecords.getValueAt(j, 3),
+					dtmRecords.getValueAt(j, 4),
+					dtmRecords.getValueAt(j, 5),
+					dtmRecords.getValueAt(j, 6),
+					dtmRecords.getValueAt(j, 7),
+					dtmRecords.getValueAt(j, 8),
+					dtmRecords.getValueAt(j, 9)
+				};
 				
-				dtmIssued.addRow(issuedFile);
+				dtmIssued.addRow(issuedFile);	
 			}
+			
 			issuedTable.setModel(dtmIssued);
 		} else {
 			issuedTable.setModel(dtmRecords);
 		}
 		
-		// cara hide column pada table
-		// Cara 1: susah diakses		
-//		issuedTable.removeColumn(issuedTable.getColumnModel().getColumn(1));
-//		issuedTable.removeColumn(issuedTable.getColumnModel().getColumn(0));
-		
-		// Cara 2:
-		issuedTable.getColumnModel().getColumn(1).setMinWidth(0);
-		issuedTable.getColumnModel().getColumn(1).setMaxWidth(0);
-		issuedTable.getColumnModel().getColumn(0).setMinWidth(0);
-		issuedTable.getColumnModel().getColumn(0).setMaxWidth(0);
+		issuedTable.getColumnModel().getColumn(8).setMinWidth(0);
+		issuedTable.getColumnModel().getColumn(8).setMaxWidth(0);
+		issuedTable.getColumnModel().getColumn(9).setMinWidth(0);
+		issuedTable.getColumnModel().getColumn(9).setMaxWidth(0);
 	} 
 	
-	public void initComponent(ArrayList<IssuedBook> issuedBooks) {
+	public DefaultTableModel filterRecords(String value, DefaultTableModel dtmSearchRecords) {
+		
+		for(int i = 0; i < dtmRecords.getRowCount(); i++) {
+			String[] pos = String.valueOf(dtmRecords.getValueAt(i, 8)).split("-");
+			IssuedBook issuedBook = member.getIssuedBooks().get(Integer.parseInt(pos[1]));
+			Object[] issuedFile = {issuedBook.getId(), member.getName(), 
+					issuedBook.getBook().getIsbn(), issuedBook.getBook().getName(), 
+					issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
+					issuedBook.getStatus(), issuedBook.getFineStatus(), dtmRecords.getValueAt(i, 8), issuedBook.getFine().getStatus()};
+			
+			if(type) {
+				if((!issuedBook.getStatus().equals("Returned") || issuedBook.getFine().getStatus().equalsIgnoreCase("Not Paid")) &&
+						(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+								member.getName().toLowerCase().contains(value.toLowerCase()) ||
+								issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+								issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase()))) {
+					
+					dtmSearchRecords.addRow(issuedFile);
+				
+				}
+			} else if(issuedBook.getId().toLowerCase().contains(value.toLowerCase()) ||
+					member.getName().toLowerCase().contains(value.toLowerCase()) ||
+					issuedBook.getBook().getIsbn().toLowerCase().contains(value.toLowerCase()) || 
+					issuedBook.getBook().getName().toLowerCase().contains(value.toLowerCase())) {
+				
+				dtmSearchRecords.addRow(issuedFile);				
+			}
+		}
+		
+		return dtmSearchRecords;
+	}
+	
+	public DefaultTableModel filterRecordsByDate(LocalDate fromDate, LocalDate toDate, DefaultTableModel dtmSearchRecords) {
+		ArrayList<IssuedBook> searchedRecords = new ArrayList<>();
+		
+		for(int i = 0; i < dtmRecords.getRowCount(); i++) {
+			String[] pos = String.valueOf(dtmRecords.getValueAt(i, 8)).split("-");
+			IssuedBook issuedBook = member.getIssuedBooks().get(Integer.parseInt(pos[1]));
+			Object[] issuedFile = {issuedBook.getId(), member.getName(), 
+					issuedBook.getBook().getIsbn(), issuedBook.getBook().getName(), 
+					issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
+					issuedBook.getStatus(), issuedBook.getFineStatus(), dtmRecords.getValueAt(i, 8), issuedBook.getFine().getStatus()};
+			
+			if(type) {
+				if((!issuedBook.getStatus().equals("Returned") || issuedBook.getFine().getStatus().equalsIgnoreCase("Not Paid")) &&
+						issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+						issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+					
+					dtmSearchRecords.addRow(issuedFile);
+				
+				}
+			} else if(issuedBook.getIssueDate().compareTo(fromDate) >= 0 && 
+					issuedBook.getReturnDate().compareTo(toDate) <= 0) {
+				
+				dtmSearchRecords.addRow(issuedFile);				
+			}
+		}
+		
+		return dtmSearchRecords;
+	}
+	
+	public void initComponent(ArrayList<Member> members) {
 		setLayout(new BorderLayout());
 		
 		GridBagLayout menubarLayout = new GridBagLayout();
@@ -174,7 +238,7 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 		menubar.add(accountBtn, menubarConst);
 		
 		// Table of Issued
-		loadTable(issuedBooks);
+		loadTable(members);
 		
 		// Issued Book Form
 		GridBagLayout formLayout = new GridBagLayout();
@@ -299,7 +363,7 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 		this.type = type;
 		this.member = member;
 		
-		initComponent(library.getIssuedBooks());
+		initComponent(library.getMembers());
 		setSize(width, height);
 		setTitle("Library Management System");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -319,10 +383,16 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 			library.changeFrame(new MemberBookFrame(library, getWidth(), getHeight(), point, member), this);
 			
 		} else if(e.getSource().equals(issuedBtn)) {
+			if(!type) {
+				Point point = getLocationOnScreen();
+				library.changeFrame(new MemberIssuedRecordsFrame(library, getWidth(), getHeight(), point, true, member), this);				
+			}
 			
 		} else if(e.getSource().equals(recordBtn)) {
-			Point point = getLocationOnScreen();
-			library.changeFrame(new MemberIssuedRecordsFrame(library, getWidth(), getHeight(), point, false, member), this);
+			if(type) {
+				Point point = getLocationOnScreen();
+				library.changeFrame(new MemberIssuedRecordsFrame(library, getWidth(), getHeight(), point, false, member), this);				
+			}
 			
 		} else if(e.getSource().equals(logoutBtn)) {
 			library.logout(this, getWidth(), getHeight());
@@ -338,8 +408,10 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 			if(selectedRow != -1) {
 				setEnabled(false);
 
-				ViewRecordFrame viewRecord = new ViewRecordFrame(this, getWidth(), getHeight(), 
-						library.searchRecord(issuedTable.getValueAt(selectedRow, 0).toString(), tempMemberIssuedBooks));
+				String[] pos = String.valueOf(issuedTable.getModel().getValueAt(selectedRow, 8)).split("-");
+				IssuedBook issuedBook = member.getIssuedBooks().get(Integer.parseInt(pos[1]));
+				
+				ViewRecordFrame viewRecord = new ViewRecordFrame(this, getWidth(), getHeight(), issuedBook, this.member);
 			} else {
 				JOptionPane.showMessageDialog(this, "Choose Data to View", "Error", JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -355,22 +427,19 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 						return false;
 					}
 				};
-				ArrayList<IssuedBook> searchedRecords = library.filterRecordsByDate(fromDate, toDate, type, tempMemberIssuedBooks);
-				
-				for(IssuedBook issuedBook : searchedRecords) {
-					Object[] issuedFile = {issuedBook.getId(), issuedBook.getMember().getName(), issuedBook.getBook().getIsbn(),
-							issuedBook.getBook().getName(), issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
-							issuedBook.getStatus(), issuedBook.getFine()};
-					dtmSearchByDateIssued.addRow(issuedFile);
-				}
+				dtmSearchByDateIssued = filterRecordsByDate(fromDate, toDate, dtmSearchByDateIssued);
 				
 				issuedTable.setModel(dtmSearchByDateIssued);
+				issuedTable.getColumnModel().getColumn(8).setMinWidth(0);
+				issuedTable.getColumnModel().getColumn(8).setMaxWidth(0);
+				issuedTable.getColumnModel().getColumn(9).setMinWidth(0);
+				issuedTable.getColumnModel().getColumn(9).setMaxWidth(0);
 				issuedTable.invalidate();
 			}			
 		} else if(e.getSource().equals(searchBtnTxt)) {
 			String searchValue = searchTxt.getText();
 			
-			if(!searchValue.equals("")) {
+			if(!searchValue.trim().equals("")) {
 				dtmSearchIssued = new DefaultTableModel(issuedColumn, 0) {
 					@Override
 					public boolean isCellEditable(int row, int column) {
@@ -378,43 +447,28 @@ public class MemberIssuedRecordsFrame extends JFrame implements ActionListener {
 						return false;
 					}
 				};
-				ArrayList<IssuedBook> searchedRecords = library.filterRecords(searchValue, type, tempMemberIssuedBooks);
 				
-				for(IssuedBook issuedBook : searchedRecords) {
-					Object[] issuedFile = {issuedBook.getId(), issuedBook.getMember().getName(), issuedBook.getBook().getIsbn(),
-							issuedBook.getBook().getName(), issuedBook.getIssueDate(), issuedBook.getReturnDate(), 
-							issuedBook.getStatus(), issuedBook.getFine()};
-					dtmSearchIssued.addRow(issuedFile);
-				}
+				dtmSearchIssued = filterRecords(searchValue, dtmSearchIssued);
 				
 				issuedTable.setModel(dtmSearchIssued);
+				issuedTable.getColumnModel().getColumn(8).setMinWidth(0);
+				issuedTable.getColumnModel().getColumn(8).setMaxWidth(0);
+				issuedTable.getColumnModel().getColumn(9).setMinWidth(0);
+				issuedTable.getColumnModel().getColumn(9).setMaxWidth(0);
 				issuedTable.invalidate();
 			}
-		} else if(e.getSource().equals(returnedBtn)) {
-			int selectedRow = issuedTable.getSelectedRow();
-			
-			if(selectedRow != -1) {
-				int answer = JOptionPane.showConfirmDialog(this, "Are you sure this book has been returned?", "Returning Book", 
-						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				
-				if(answer == JOptionPane.YES_OPTION) {
-					IssuedBook issuedBook = library.searchRecord(issuedTable.getValueAt(selectedRow, 0).toString());
-					
-					library.changeIssuedBook(issuedBook);
-					loadTable(library.getIssuedBooks());
-					issuedTable.setModel(dtmIssued);
-					issuedTable.invalidate();				
-				}
+		} else if(e.getSource().equals(resetBtn)) {
+			if(type) {
+				issuedTable.setModel(dtmIssued);				
 			} else {
-				JOptionPane.showMessageDialog(this, "Choose entry that want to be returned", "Error", JOptionPane.INFORMATION_MESSAGE);
-				System.out.println("asd");
+				issuedTable.setModel(dtmRecords);				
 			}
-		}  else if(e.getSource().equals(resetBtn)) {
-			if(!searchTxt.getText().equals("")) {
-				issuedTable.setModel(dtmIssued);
-				issuedTable.invalidate();				
-				searchTxt.setText("");
-			}
+			issuedTable.getColumnModel().getColumn(8).setMinWidth(0);
+			issuedTable.getColumnModel().getColumn(8).setMaxWidth(0);
+			issuedTable.getColumnModel().getColumn(9).setMinWidth(0);
+			issuedTable.getColumnModel().getColumn(9).setMaxWidth(0);
+			issuedTable.invalidate();				
+			searchTxt.setText("");
 		}
 	}
 

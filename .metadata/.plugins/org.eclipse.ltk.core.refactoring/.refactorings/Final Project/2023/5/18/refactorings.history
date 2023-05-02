@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;librarymanagementsystem.viewAuthorFrame&apos; to &apos;ViewAuthorFrame&apos;&#x0D;&#x0A;- Original project: &apos;Final Project&apos;&#x0D;&#x0A;- Original element: &apos;librarymanagementsystem.viewAuthorFrame&apos;&#x0D;&#x0A;- Renamed element: &apos;librarymanagementsystem.ViewAuthorFrame&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;viewAuthorFrame&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;librarymanagementsystem{viewAuthorFrame.java[viewAuthorFrame" matchStrategy="1" name="ViewAuthorFrame" qualified="false" references="true" similarDeclarations="false" stamp="1682991788265" textual="false" version="1.0"/>
+</session>

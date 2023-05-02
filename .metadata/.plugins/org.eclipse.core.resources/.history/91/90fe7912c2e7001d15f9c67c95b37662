@@ -1,0 +1,108 @@
+package librarymanagementsystem;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+public class Book {
+	private String name;
+	private ArrayList<Author> authors;
+	private int publishYear;
+	private int pages;
+	private String isbn;
+	private String publisher;
+	private String synopsis;
+	private int quantity;
+	
+	public Book() {
+		
+	}
+
+	public Book(String name, ArrayList<Author> authors, int publishYear, int pages, String isbn, String publisher,
+			String synopsis, int quantity) {
+		this.name = name;
+		this.authors = authors;
+		this.publishYear = publishYear;
+		this.pages = pages;
+		this.isbn = isbn;
+		this.publisher = publisher;
+		this.synopsis = synopsis;
+		this.quantity = quantity;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public ArrayList<Author> getAuthors() {
+		return authors;
+	}
+	
+	public void setAuthors(ArrayList<Author> authors) {
+		this.authors = authors;
+	}
+	
+	public int getPublishYear() {
+		return publishYear;
+	}
+	
+	public void setPublishYear(int publishYear) {
+		this.publishYear = publishYear;
+	}
+	
+	public int getPages() {
+		return pages;
+	}
+	
+	public void setPages(int pages) {
+		this.pages = pages;
+	}
+	
+	public String getIsbn() {
+		return isbn;
+	}
+	
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+	
+	public String getPublisher() {
+		return publisher;
+	}
+	
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+	
+	public String getSynopsis() {
+		return synopsis;
+	}
+	
+	public void setSynopsis(String synopsis) {
+		this.synopsis = synopsis;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
+	public String getAllAuthorName() {
+		String[] authorsName = new String[authors.size()];
+		int i = 0;
+		
+		for(Author author : authors) {
+			authorsName[i] = author.getName();
+			System.out.println(i + " " + author.getName());
+		}
+		
+		return String.join(", ", authorsName);
+	}
+	
+}
